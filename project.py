@@ -7,8 +7,9 @@ class Urzicarius(pygame.sprite.Sprite):
         self.speed = speed
         self.default_image = pygame.image.load('personaj_joc.png')
         self.image = self.default_image
+        self.flip = False
+        self.direction = 1
         self.image_left = pygame.image.load('personaj_joc_left.png')
-        self.image_right = pygame.image.load('personaj_joc_right.png')
         self.rect = self.image.get_rect()
         self.weapon_image=None
         self.rect.center = (x, y)
@@ -21,10 +22,14 @@ class Urzicarius(pygame.sprite.Sprite):
 
     def draw(self):
         if self.alive:
-            screen.blit(self.image, self.rect)
+            screen.blit(pygame.transform.flip(self.image, self.flip, False), self.rect)
             if self.weapon_image:
-                screen.blit(self.weapon_image, (self.rect.centerx + 50, self.rect.centery))
-            self.basic_health()
+                if not self.flip:  # Facing right
+                    screen.blit(self.weapon_image, (self.rect.centerx + 60, self.rect.centery))
+                else:  # Facing left
+                    screen.blit(pygame.transform.flip(self.weapon_image, True, False), (self.rect.centerx - 100, self.rect.centery))
+        self.basic_health()
+
 
     def move(self, moving_left, moving_right):
         if not self.alive:
@@ -32,11 +37,14 @@ class Urzicarius(pygame.sprite.Sprite):
 
         dx = 0
         if moving_left:
-            self.image = self.image_left
             dx -= self.speed
+            self.flip = True
+            self.direction = -1
         elif moving_right:
-            self.image = self.image_right
+            self.image = self.image_left
             dx += self.speed
+            self.flip = False
+            self.direction = 1
         else:
             self.image = self.default_image
         self.rect.x += dx
