@@ -1,6 +1,14 @@
 import pygame
 import random
 
+class Wall(pygame.sprite.Sprite):
+    def __init__(self, x, y, width, height):
+        pygame.sprite.Sprite.__init__(self)
+        self.rect =pygame.Rect(x,y,width,height)
+
+    def draw(self):
+        pygame.draw.rect(screen,(255,255,255),self.rect)
+    
 class Urzicarius(pygame.sprite.Sprite):
     def __init__(self, x, y, speed):
         pygame.sprite.Sprite.__init__(self)
@@ -24,9 +32,9 @@ class Urzicarius(pygame.sprite.Sprite):
         if self.alive:
             screen.blit(pygame.transform.flip(self.image, self.flip, False), self.rect)
             if self.weapon_image:
-                if not self.flip:  # Facing right
+                if not self.flip:
                     screen.blit(self.weapon_image, (self.rect.centerx + 60, self.rect.centery))
-                else:  # Facing left
+                else:  
                     screen.blit(pygame.transform.flip(self.weapon_image, True, False), (self.rect.centerx - 100, self.rect.centery))
         self.basic_health()
 
@@ -69,19 +77,19 @@ class Urzicarius(pygame.sprite.Sprite):
         if self.displayed_health > self.current_health:
             self.displayed_health -= 3 
 
-        pygame.draw.rect(screen, (0, 255, 0), (10, 10, self.current_health / self.health_ratio, 20))
-        pygame.draw.rect(screen, (255, 255, 255), (10, 10, self.health_bar_length, 20), 4)
+        pygame.draw.rect(screen, (0, 255, 0), (25, 10, self.current_health / self.health_ratio, 20))
+        pygame.draw.rect(screen, (255, 255, 255), (25, 10, self.health_bar_length, 20), 4)
 
-        pygame.draw.rect(screen, (204, 160, 29), (10 + self.current_health / self.health_ratio, 10, 
+        pygame.draw.rect(screen, (204, 160, 29), (25 + self.current_health / self.health_ratio, 10, 
                      (self.displayed_health - self.current_health) / self.health_ratio, 20))
-        pygame.draw.rect(screen, (255, 255, 255), (10, 10, self.health_bar_length, 20), 4)
+        pygame.draw.rect(screen, (255, 255, 255), (25, 10, self.health_bar_length, 20), 4)
 
         if self.current_health < self.max_health / 2:
-            pygame.draw.rect(screen, (255, 255, 0), (10, 10, self.current_health / self.health_ratio, 20))
-            pygame.draw.rect(screen, (255, 255, 255), (10, 10, self.health_bar_length, 20), 4)
+            pygame.draw.rect(screen, (255, 255, 0), (25, 10, self.current_health / self.health_ratio, 20))
+            pygame.draw.rect(screen, (255, 255, 255),(25, 10, self.health_bar_length, 20), 4)
         if self.current_health < self.max_health / 4:
-            pygame.draw.rect(screen, (255, 0, 0), (10, 10, self.current_health / self.health_ratio, 20))
-            pygame.draw.rect(screen, (255, 255, 255), (10, 10, self.health_bar_length, 20), 4)
+            pygame.draw.rect(screen, (255, 0, 0), (25, 10, self.current_health / self.health_ratio, 20))
+            pygame.draw.rect(screen, (255, 255, 255), (25, 10, self.health_bar_length, 20), 4)
 
 
 class Weapon(pygame.sprite.Sprite):
@@ -170,6 +178,9 @@ FPS = 60
 
 player = Urzicarius(100, SCREEN_HEIGHT // 2, 5)
 enemy = Enemy(700, SCREEN_HEIGHT // 2, 1, 'big_boss.png')
+wall_left=Wall(0,0,20, SCREEN_WIDTH)
+wall_right=Wall(780,0,20, SCREEN_WIDTH)
+
 weapon_group = pygame.sprite.Group()
 bullet_group = pygame.sprite.Group()
 enemy_group = pygame.sprite.Group()
@@ -185,9 +196,11 @@ moving_right = False
 
 run = True
 while run:
+
     clock.tick(FPS)
     screen.fill((144, 201, 120))
-
+    wall_left.draw()
+    wall_right.draw()
     if player.alive:
         player.draw()
         player.move(moving_left, moving_right)
@@ -204,7 +217,7 @@ while run:
 
     font = pygame.font.SysFont(None, 36)
     bullet_text = font.render(f'Bullets: {bullets}', True, (0, 0, 0))
-    screen.blit(bullet_text, (10, 40))
+    screen.blit(bullet_text, (25, 40))
 
     pygame.display.update()
 
