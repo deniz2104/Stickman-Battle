@@ -1,5 +1,6 @@
 import pygame
 import random
+import math
 
 class Wall(pygame.sprite.Sprite):
     def __init__(self, x, y, width, height):
@@ -27,8 +28,10 @@ class Urzicarius(pygame.sprite.Sprite):
         self.max_health = 1000
         self.health_bar_length = 300
         self.health_ratio = self.max_health / self.health_bar_length
-        self.health_ratio_for_healthbar =self.max_health / self.health_bar_length 
         self.alive = True
+        self.frame = 1
+        self.last_frame_update = 0
+        self.frame_duration = 100
 
     def draw(self):
         if self.alive:
@@ -96,7 +99,22 @@ class Urzicarius(pygame.sprite.Sprite):
         if self.current_health < self.max_health / 4:
             pygame.draw.rect(screen, (255, 0, 0), (25, 10, self.current_health / self.health_ratio, 20))
             pygame.draw.rect(screen, (255, 255, 255), (25, 10, self.health_bar_length, 20), 4)
+    
+    def animate_idle(self):
+        self.frame_duration = 2500  
+        self.scale_range=(0.99,1.02)
+        now =pygame.time.get_ticks()  
 
+        cycle_progress = (now % self.frame_duration) / self.frame_duration
+
+        min_scale, max_scale = self.scale_range
+        scale_factor = min_scale + (max_scale - min_scale) * (0.5 * (1 + math.sin(2 * math.pi * cycle_progress)))
+        
+        original_width, original_height = self.default_image.get_size()
+        new_width = int(original_width * scale_factor)
+        new_height = int(original_height * scale_factor)
+
+        self.image = pygame.transform.scale(self.default_image, (new_width, new_height))
 
 class Weapon(pygame.sprite.Sprite):
     def __init__(self, x, y, image_path):
@@ -210,6 +228,8 @@ while run:
     if player.alive:
         player.draw()
         player.move(moving_left, moving_right)
+    if not moving_left and not moving_right and player.alive:
+        player.animate_idle()
 
     weapon_group.draw(screen)
 
@@ -244,7 +264,8 @@ while run:
             if event.key == pygame.K_d or event.key == pygame.K_RIGHT:
                 moving_right = True
             if event.key == pygame.K_SPACE and bullets > 0 and player.alive:
-                bullet = Bullet(player.rect.centerx, player.rect.centery, 1, 'bullet.png')
+
+                bullet = Bullet(player.rect.centerx+80, player.rect.centery+15, 1, 'bullet.png')
                 bullet_group.add(bullet)
                 bullets -= 1
             if event.key == pygame.K_ESCAPE:
