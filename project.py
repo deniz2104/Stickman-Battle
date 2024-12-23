@@ -68,7 +68,6 @@ class Urzicarius(pygame.sprite.Sprite):
                      (self.displayed_health - self.current_health) / self.health_ratio, 20))
         pygame.draw.rect(screen, (255, 255, 255), (10, 10, self.health_bar_length, 20), 4)
 
-    # Additional logic for changing colors based on thresholds
         if self.current_health < self.max_health / 2:
             pygame.draw.rect(screen, (255, 255, 0), (10, 10, self.current_health / self.health_ratio, 20))
             pygame.draw.rect(screen, (255, 255, 255), (10, 10, self.health_bar_length, 20), 4)
@@ -132,8 +131,25 @@ class Enemy(pygame.sprite.Sprite):
             self.kill()
 
     def basic_health(self):
-        pygame.draw.rect(screen, (255, 0, 0), (self.rect.x + 45, self.rect.y, self.health / self.health_ratio, 5))
+        if not hasattr(self, 'displayed_health'):
+            self.displayed_health = self.health
+
+        if self.displayed_health > self.health:
+            self.displayed_health -= 1
+
+        pygame.draw.rect(screen, (0, 255, 0), (self.rect.x + 45, self.rect.y, self.health / self.health_ratio, 5))
         pygame.draw.rect(screen, (255, 255, 255), (self.rect.x + 45, self.rect.y, self.health_bar_length, 5), 1)
+
+        pygame.draw.rect(screen, (204, 160, 29), (self.rect.x + 45 + self.health / self.health_ratio, self.rect.y, 
+                     (self.displayed_health - self.health) / self.health_ratio, 5))
+        pygame.draw.rect(screen, (255, 255, 255), (self.rect.x+45,self.rect.y , self.health_bar_length, 5), 1)
+
+        if self.health < self.max_health / 2:
+            pygame.draw.rect(screen, (255, 255, 0), (self.rect.x + 45, self.rect.y, self.health / self.health_ratio, 5))
+            pygame.draw.rect(screen, (255, 255, 255), (self.rect.x + 45, self.rect.y, self.health_bar_length, 5), 1)
+        if self.health < self.max_health / 4:
+            pygame.draw.rect(screen, (255, 0, 0), (self.rect.x + 45, self.rect.y, self.health / self.health_ratio, 5))
+            pygame.draw.rect(screen, (255, 255, 255), (self.rect.x + 45, self.rect.y, self.health_bar_length, 5), 1)
 
 
 pygame.init()
