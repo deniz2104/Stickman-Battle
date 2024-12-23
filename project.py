@@ -48,11 +48,15 @@ class Urzicarius(pygame.sprite.Sprite):
             dx -= self.speed
             self.flip = True
             self.direction = -1
+            if self.rect.colliderect(wall_left):
+                self.rect.left = wall_left.rect.right
         elif moving_right:
             self.image = self.image_left
             dx += self.speed
             self.flip = False
             self.direction = 1
+            if self.rect.colliderect(wall_right):
+                self.rect.right = wall_right.rect.left
         else:
             self.image = self.default_image
         self.rect.x += dx
