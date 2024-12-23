@@ -16,6 +16,7 @@ class Urzicarius(pygame.sprite.Sprite):
         self.max_health = 1000
         self.health_bar_length = 300
         self.health_ratio = self.max_health / self.health_bar_length
+        self.health_ratio_for_healthbar =self.max_health / self.health_bar_length 
         self.alive = True
 
     def draw(self):
@@ -54,8 +55,26 @@ class Urzicarius(pygame.sprite.Sprite):
                 self.current_health = self.max_health
 
     def basic_health(self):
-        pygame.draw.rect(screen, (255, 0, 0), (10, 10, self.current_health / self.health_ratio, 20))
+        if not hasattr(self, 'displayed_health'):
+            self.displayed_health = self.current_health
+
+        if self.displayed_health > self.current_health:
+            self.displayed_health -= 3 
+
+        pygame.draw.rect(screen, (0, 255, 0), (10, 10, self.current_health / self.health_ratio, 20))
         pygame.draw.rect(screen, (255, 255, 255), (10, 10, self.health_bar_length, 20), 4)
+
+        pygame.draw.rect(screen, (204, 160, 29), (10 + self.current_health / self.health_ratio, 10, 
+                     (self.displayed_health - self.current_health) / self.health_ratio, 20))
+        pygame.draw.rect(screen, (255, 255, 255), (10, 10, self.health_bar_length, 20), 4)
+
+    # Additional logic for changing colors based on thresholds
+        if self.current_health < self.max_health / 2:
+            pygame.draw.rect(screen, (255, 255, 0), (10, 10, self.current_health / self.health_ratio, 20))
+            pygame.draw.rect(screen, (255, 255, 255), (10, 10, self.health_bar_length, 20), 4)
+        if self.current_health < self.max_health / 4:
+            pygame.draw.rect(screen, (255, 0, 0), (10, 10, self.current_health / self.health_ratio, 20))
+            pygame.draw.rect(screen, (255, 255, 255), (10, 10, self.health_bar_length, 20), 4)
 
 
 class Weapon(pygame.sprite.Sprite):
