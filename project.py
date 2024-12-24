@@ -179,6 +179,7 @@ class Enemy(pygame.sprite.Sprite):
             self.health = 0
             self.alive = False
             self.kill()
+            self.rect = pygame.Rect(0, 0, 0, 0)
 
     def basic_health(self):
         if not hasattr(self, 'displayed_health'):
