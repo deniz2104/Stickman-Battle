@@ -6,7 +6,7 @@ class Wall(pygame.sprite.Sprite):
     def __init__(self, x, y, width, height):
         pygame.sprite.Sprite.__init__(self)
         self.rect =pygame.Rect(x,y,width,height)
-        self.image=pygame.image.load('wall_texture.png').convert_alpha()
+        self.image=pygame.image.load('Textures/wall_texture.png').convert_alpha()
 
     def draw(self):
         pygame.draw.rect(screen,(255,255,255),self.rect)
@@ -16,12 +16,12 @@ class Urzicarius(pygame.sprite.Sprite):
     def __init__(self, x, y, speed):
         pygame.sprite.Sprite.__init__(self)
         self.speed = speed
-        self.default_image = pygame.image.load('personaj_joc.png').convert_alpha()
+        self.default_image = pygame.image.load('Textures/personaj_joc.png').convert_alpha()
         self.image = self.default_image
         self.mask = pygame.mask.from_surface(self.image)
         self.flip = False
         self.direction = 1
-        self.image_left = pygame.image.load('personaj_joc_left.png').convert_alpha()
+        self.image_left = pygame.image.load('Textures/personaj_joc_left.png').convert_alpha()
         self.rect = self.image.get_rect()
         self.weapon_image=None
         self.rect.center = (x, y)
@@ -211,7 +211,7 @@ clock = pygame.time.Clock()
 FPS = 60
 
 player = Urzicarius(100, SCREEN_HEIGHT // 1.5, 5)
-enemy = Enemy(680, SCREEN_HEIGHT // 1.5, 1, 'big_boss.png')
+enemy = Enemy(680, SCREEN_HEIGHT // 1.5, 1, 'Textures/big_boss.png')
 wall_left=Wall(0,0,20, SCREEN_WIDTH)
 wall_right=Wall(780,0,20, SCREEN_WIDTH)
 
@@ -265,7 +265,7 @@ while run:
             if not weapon_group:
                 x = random.randint(100, SCREEN_WIDTH - 50)
                 y = SCREEN_HEIGHT // 1.5
-                weapon = Weapon(x, y, 'gun.png')
+                weapon = Weapon(x, y, 'Textures/gun.png')
                 weapon_group.add(weapon)
 
         if event.type == pygame.KEYDOWN:
@@ -275,9 +275,9 @@ while run:
                 moving_right = True
             if event.key == pygame.K_SPACE and bullets > 0 and player.alive:
                 if  player.flip: 
-                    bullet = Bullet(player.rect.left, player.rect.centery + 15, player.direction, 'bullet.png')
+                    bullet = Bullet(player.rect.left, player.rect.centery + 15, player.direction, 'Textures/bullet.png')
                 else:  
-                    bullet = Bullet(player.rect.right, player.rect.centery + 15, player.direction, 'bullet.png')
+                    bullet = Bullet(player.rect.right, player.rect.centery + 15, player.direction, 'Textures/bullet.png')
                 bullet_group.add(bullet)
                 bullets -= 1
             if event.key == pygame.K_ESCAPE:
@@ -292,7 +292,7 @@ while run:
     if pygame.sprite.spritecollide(player, weapon_group, True,pygame.sprite.collide_mask) and player.alive:
         bullets = 15
         weapon_collected = True
-        player.weapon_image = pygame.image.load('gun.png')
+        player.weapon_image = pygame.image.load('Textures/gun.png')
 
     if bullets == 0:
         weapon_collected = False
