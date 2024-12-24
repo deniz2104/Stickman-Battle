@@ -6,7 +6,7 @@ class Wall(pygame.sprite.Sprite):
     def __init__(self, x, y, width, height):
         pygame.sprite.Sprite.__init__(self)
         self.rect =pygame.Rect(x,y,width,height)
-        self.image=pygame.image.load('wall_texture.png')
+        self.image=pygame.image.load('wall_texture.png').convert_alpha()
 
     def draw(self):
         pygame.draw.rect(screen,(255,255,255),self.rect)
@@ -16,11 +16,12 @@ class Urzicarius(pygame.sprite.Sprite):
     def __init__(self, x, y, speed):
         pygame.sprite.Sprite.__init__(self)
         self.speed = speed
-        self.default_image = pygame.image.load('personaj_joc.png')
+        self.default_image = pygame.image.load('personaj_joc.png').convert_alpha()
         self.image = self.default_image
+        self.mask = pygame.mask.from_surface(self.image)
         self.flip = False
         self.direction = 1
-        self.image_left = pygame.image.load('personaj_joc_left.png')
+        self.image_left = pygame.image.load('personaj_joc_left.png').convert_alpha()
         self.rect = self.image.get_rect()
         self.weapon_image=None
         self.rect.center = (x, y)
@@ -115,11 +116,14 @@ class Urzicarius(pygame.sprite.Sprite):
         new_height = int(original_height * scale_factor)
 
         self.image = pygame.transform.scale(self.default_image, (new_width, new_height))
+        self.rect = self.image.get_rect(center=self.rect.center)  
+        self.mask = pygame.mask.from_surface(self.image)
 
 class Weapon(pygame.sprite.Sprite):
     def __init__(self, x, y, image_path):
         pygame.sprite.Sprite.__init__(self)
-        self.image = pygame.image.load(image_path)
+        self.image = pygame.image.load(image_path).convert_alpha()
+        self.mask =pygame.mask.from_surface(self.image)
         self.rect = self.image.get_rect()
         self.rect.center = (x, y)
 
@@ -127,22 +131,25 @@ class Weapon(pygame.sprite.Sprite):
 class Bullet(pygame.sprite.Sprite):
     def __init__(self, x, y, direction, image_path):
         pygame.sprite.Sprite.__init__(self)
-        self.image = pygame.image.load(image_path)
+        self.image = pygame.image.load(image_path).convert_alpha()
+        self.mask = pygame.mask.from_surface(self.image)
         self.rect = self.image.get_rect()
         self.rect.center = (x, y)
         self.speed = 10 * direction
 
     def update(self):
         self.rect.x += self.speed
-        if self.rect.colliderect(enemy.rect):
+        if pygame.sprite.collide_mask(self, enemy):
             enemy.get_damage(40)
+            self.kill()
+        if self.rect.colliderect(wall_right) or self.rect.colliderect(wall_left):
             self.kill()
 
 
 class Enemy(pygame.sprite.Sprite):
     def __init__(self, x, y, speed, image_path):
         pygame.sprite.Sprite.__init__(self)
-        self.image = pygame.image.load(image_path)
+        self.image = pygame.image.load(image_path).convert_alpha()
         self.rect = self.image.get_rect()
         self.rect.center = (x, y)
         self.speed = speed
@@ -152,14 +159,15 @@ class Enemy(pygame.sprite.Sprite):
         self.health_ratio = self.max_health / self.health_bar_length
 
     def draw(self):
-        screen.blit(self.image, self.rect)
-        self.basic_health()
-
+        if self.alive:
+            screen.blit(self.image, self.rect)
+            self.basic_health()
     def update(self, player):
-        if player.rect.x > self.rect.x:
-            self.rect.x += self.speed
-        elif player.rect.x < self.rect.x:
-            self.rect.x -= self.speed
+        if self.alive:
+            if player.rect.x > self.rect.x:
+                self.rect.x += self.speed
+            elif player.rect.x < self.rect.x:
+                self.rect.x -= self.speed
 
     def attack(self, player):
         if self.rect.colliderect(player.rect):
@@ -168,6 +176,8 @@ class Enemy(pygame.sprite.Sprite):
     def get_damage(self, amount):
         self.health -= amount
         if self.health <= 0:
+            self.health = 0
+            self.alive = False
             self.kill()
 
     def basic_health(self):
@@ -177,19 +187,19 @@ class Enemy(pygame.sprite.Sprite):
         if self.displayed_health > self.health:
             self.displayed_health -= 1
 
-        pygame.draw.rect(screen, (0, 255, 0), (self.rect.x + 45, self.rect.y, self.health / self.health_ratio, 5))
-        pygame.draw.rect(screen, (255, 255, 255), (self.rect.x + 45, self.rect.y, self.health_bar_length, 5), 1)
+        pygame.draw.rect(screen, (0, 255, 0), (self.rect.x + 50, self.rect.y, self.health / self.health_ratio, 5))
+        pygame.draw.rect(screen, (255, 255, 255), (self.rect.x + 50, self.rect.y, self.health_bar_length, 5), 1)
 
-        pygame.draw.rect(screen, (204, 160, 29), (self.rect.x + 45 + self.health / self.health_ratio, self.rect.y, 
+        pygame.draw.rect(screen, (204, 160, 29), (self.rect.x + 50 + self.health / self.health_ratio, self.rect.y, 
                      (self.displayed_health - self.health) / self.health_ratio, 5))
-        pygame.draw.rect(screen, (255, 255, 255), (self.rect.x+45,self.rect.y , self.health_bar_length, 5), 1)
+        pygame.draw.rect(screen, (255, 255, 255), (self.rect.x+50,self.rect.y , self.health_bar_length, 5), 1)
 
         if self.health < self.max_health / 2:
-            pygame.draw.rect(screen, (255, 255, 0), (self.rect.x + 45, self.rect.y, self.health / self.health_ratio, 5))
-            pygame.draw.rect(screen, (255, 255, 255), (self.rect.x + 45, self.rect.y, self.health_bar_length, 5), 1)
+            pygame.draw.rect(screen, (255, 255, 0), (self.rect.x + 50, self.rect.y, self.health / self.health_ratio, 5))
+            pygame.draw.rect(screen, (255, 255, 255), (self.rect.x + 50, self.rect.y, self.health_bar_length, 5), 1)
         if self.health < self.max_health / 4:
-            pygame.draw.rect(screen, (255, 0, 0), (self.rect.x + 45, self.rect.y, self.health / self.health_ratio, 5))
-            pygame.draw.rect(screen, (255, 255, 255), (self.rect.x + 45, self.rect.y, self.health_bar_length, 5), 1)
+            pygame.draw.rect(screen, (255, 0, 0), (self.rect.x + 50, self.rect.y, self.health / self.health_ratio, 5))
+            pygame.draw.rect(screen, (255, 255, 255), (self.rect.x + 50, self.rect.y, self.health_bar_length, 5), 1)
 
 
 pygame.init()
@@ -200,8 +210,8 @@ pygame.display.set_caption('Stickman Battle')
 clock = pygame.time.Clock()
 FPS = 60
 
-player = Urzicarius(100, SCREEN_HEIGHT // 2, 5)
-enemy = Enemy(700, SCREEN_HEIGHT // 2, 1, 'big_boss.png')
+player = Urzicarius(100, SCREEN_HEIGHT // 1.5, 5)
+enemy = Enemy(680, SCREEN_HEIGHT // 1.5, 1, 'big_boss.png')
 wall_left=Wall(0,0,20, SCREEN_WIDTH)
 wall_right=Wall(780,0,20, SCREEN_WIDTH)
 
@@ -254,7 +264,7 @@ while run:
         if event.type == WEAPON_SPAWN_EVENT and not weapon_collected and bullets == 0:
             if not weapon_group:
                 x = random.randint(100, SCREEN_WIDTH - 50)
-                y = SCREEN_HEIGHT // 2
+                y = SCREEN_HEIGHT // 1.5
                 weapon = Weapon(x, y, 'gun.png')
                 weapon_group.add(weapon)
 
@@ -264,8 +274,10 @@ while run:
             if event.key == pygame.K_d or event.key == pygame.K_RIGHT:
                 moving_right = True
             if event.key == pygame.K_SPACE and bullets > 0 and player.alive:
-
-                bullet = Bullet(player.rect.centerx+80, player.rect.centery+15, 1, 'bullet.png')
+                if  player.flip: 
+                    bullet = Bullet(player.rect.left, player.rect.centery + 15, player.direction, 'bullet.png')
+                else:  
+                    bullet = Bullet(player.rect.right, player.rect.centery + 15, player.direction, 'bullet.png')
                 bullet_group.add(bullet)
                 bullets -= 1
             if event.key == pygame.K_ESCAPE:
@@ -277,7 +289,7 @@ while run:
             if event.key == pygame.K_d or event.key == pygame.K_RIGHT:
                 moving_right = False
 
-    if pygame.sprite.spritecollide(player, weapon_group, True) and player.alive:
+    if pygame.sprite.spritecollide(player, weapon_group, True,pygame.sprite.collide_mask) and player.alive:
         bullets = 15
         weapon_collected = True
         player.weapon_image = pygame.image.load('gun.png')
@@ -285,4 +297,6 @@ while run:
     if bullets == 0:
         weapon_collected = False
         player.weapon_image = None
+
+    
 pygame.quit()
