@@ -19,7 +19,10 @@ class Urzicarius(pygame.sprite.Sprite):
         self.default_image = pygame.image.load('Textures/personaj_joc.png').convert_alpha()
         self.image = self.default_image
         self.mask = pygame.mask.from_surface(self.image)
+        self.jump=False
+        self.in_air=True
         self.flip = False
+        self.velocity_y=0
         self.direction = 1
         self.image_left = pygame.image.load('Textures/personaj_joc_left.png').convert_alpha()
         self.rect = self.image.get_rect()
@@ -50,6 +53,7 @@ class Urzicarius(pygame.sprite.Sprite):
             return
 
         dx = 0
+        dy = 0
         if moving_left:
             dx -= self.speed
             self.flip = True
@@ -67,6 +71,22 @@ class Urzicarius(pygame.sprite.Sprite):
             self.image = self.default_image
         self.rect.x += dx
 
+        if self.jump==True and self.in_air==False:
+            self.velocity_y = -11
+            self.jump=False
+            self.in_air=True
+
+        self.velocity_y += GRAVITY
+        if self.velocity_y > 10:
+            self.velocity_y = 10
+        dy += self.velocity_y
+
+        if dy + self.rect.bottom > 500:
+            dy = 500 - self.rect.bottom
+            self.in_air=False
+        else:
+            self.in_air=True
+        self.rect.y+=dy
     def get_damage(self, amount):
         if self.alive:
             self.current_health -= amount
@@ -210,6 +230,7 @@ screen = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT))
 pygame.display.set_caption('Stickman Battle')
 clock = pygame.time.Clock()
 FPS = 60
+GRAVITY=0.75
 
 player = Urzicarius(100, SCREEN_HEIGHT // 1.5, 5)
 enemy = Enemy(680, SCREEN_HEIGHT // 1.5, 1, 'Textures/big_boss.png')
@@ -283,6 +304,8 @@ while run:
                 bullets -= 1
             if event.key == pygame.K_ESCAPE:
                 run = False
+            if event.key == pygame.K_w:
+                player.jump=True
 
         if event.type == pygame.KEYUP:
             if event.key == pygame.K_a or event.key == pygame.K_LEFT:
