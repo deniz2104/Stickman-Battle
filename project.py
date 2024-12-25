@@ -227,7 +227,7 @@ pygame.init()
 SCREEN_WIDTH = 800
 SCREEN_HEIGHT = int(SCREEN_WIDTH * 0.8)
 screen = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT))
-pygame.display.set_caption('Stickman Battle')
+pygame.display.set_caption('Urzicarius Battle')
 clock = pygame.time.Clock()
 FPS = 60
 GRAVITY=0.75
@@ -250,77 +250,127 @@ pygame.time.set_timer(WEAPON_SPAWN_EVENT, 2000)
 moving_left = False
 moving_right = False
 
+game_state = "menu" 
+
+font = pygame.font.SysFont(None, 48)
+
+class Button:
+    def __init__(self, text, x, y, width, height):
+        self.text = text
+        self.rect = pygame.Rect(x, y, width, height)
+        self.color = (100, 100, 200)
+
+    def draw(self):
+        pygame.draw.rect(screen, self.color, self.rect)
+        pygame.draw.rect(screen, (255, 255, 255), self.rect, 2)
+        text_surface = font.render(self.text, True, (255, 255, 255))
+        text_rect = text_surface.get_rect(center=self.rect.center)
+        screen.blit(text_surface, text_rect)
+
+    def is_clicked(self, pos):
+        return self.rect.collidepoint(pos)
+
+start_button = Button("Start", 300, 200, 200, 50)
+option_button = Button("Option", 300, 300, 200, 50)
+quit_button = Button("Quit", 300, 400, 200, 50)
+resume_button = Button("Resume", 300, 200, 200, 50)
+menu_background = pygame.image.load('Textures/win_and_first_background.png').convert_alpha()
 run = True
 while run:
 
     clock.tick(FPS)
     screen.fill((144, 201, 120))
-    wall_left.draw()
-    wall_right.draw()
-    if player.alive:
-        player.draw()
-        player.move(moving_left, moving_right)
-    if not moving_left and not moving_right and player.alive:
-        player.animate_idle()
 
-    weapon_group.draw(screen)
+    if game_state == "menu":
+        start_button.draw()
+        option_button.draw()
+        quit_button.draw()
+        screen.blit(menu_background, (0, 0))
 
-    bullet_group.update()
-    bullet_group.draw(screen)
-
-    for enemy in enemy_group:
-        enemy.update(player)
-        enemy.attack(player)
-        enemy.draw()
-
-    font = pygame.font.SysFont(None, 36)
-    bullet_text = font.render(f'Bullets: {bullets}', True, (0, 0, 0))
-    screen.blit(bullet_text, (25, 40))
-
-    pygame.display.update()
-
-    for event in pygame.event.get():
-        if event.type == pygame.QUIT:
-            run = False
-
-        if event.type == WEAPON_SPAWN_EVENT and not weapon_collected and bullets == 0:
-            if not weapon_group:
-                x = random.randint(100, SCREEN_WIDTH - 50)
-                y = SCREEN_HEIGHT // 1.5
-                weapon = Weapon(x, y, 'Textures/gun.png')
-                weapon_group.add(weapon)
-
-        if event.type == pygame.KEYDOWN:
-            if event.key == pygame.K_a or event.key == pygame.K_LEFT:
-                moving_left = True
-            if event.key == pygame.K_d or event.key == pygame.K_RIGHT:
-                moving_right = True
-            if event.key == pygame.K_SPACE and bullets > 0 and player.alive:
-                if  player.flip: 
-                    bullet = Bullet(player.rect.left, player.rect.centery + 15, player.direction, 'Textures/bullet.png')
-                else:  
-                    bullet = Bullet(player.rect.right, player.rect.centery + 15, player.direction, 'Textures/bullet.png')
-                bullet_group.add(bullet)
-                bullets -= 1
-            if event.key == pygame.K_ESCAPE:
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
                 run = False
-            if event.key == pygame.K_w:
-                player.jump=True
+            if event.type == pygame.MOUSEBUTTONDOWN:
+                if start_button.is_clicked(event.pos):
+                    game_state = "running"
+                elif quit_button.is_clicked(event.pos):
+                    run = False
 
-        if event.type == pygame.KEYUP:
-            if event.key == pygame.K_a or event.key == pygame.K_LEFT:
-                moving_left = False
-            if event.key == pygame.K_d or event.key == pygame.K_RIGHT:
-                moving_right = False
+    elif game_state == "running":
+        wall_left.draw()
+        wall_right.draw()
+        if player.alive:
+            player.draw()
+            player.move(moving_left, moving_right)
+        if not moving_left and not moving_right and player.alive:
+            player.animate_idle()
 
-    if pygame.sprite.spritecollide(player, weapon_group, True,pygame.sprite.collide_mask) and player.alive:
-        bullets = 15
-        weapon_collected = True
-        player.weapon_image = pygame.image.load('Textures/gun.png')
+        weapon_group.draw(screen)
+        bullet_group.update()
+        bullet_group.draw(screen)
 
-    if bullets == 0:
-        weapon_collected = False
-        player.weapon_image = None
+        for enemy in enemy_group:
+            enemy.update(player)
+            enemy.attack(player)
+            enemy.draw()
 
-    
+        bullet_text = font.render(f'Bullets: {bullets}', True, (0, 0, 0))
+        screen.blit(bullet_text, (25, 40))
+
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                run = False
+            if event.type == WEAPON_SPAWN_EVENT and not weapon_collected and bullets == 0:
+                if not weapon_group:
+                    x = random.randint(100, SCREEN_WIDTH - 50)
+                    y = SCREEN_HEIGHT // 1.5
+                    weapon = Weapon(x, y, 'Textures/gun.png')
+                    weapon_group.add(weapon)
+            if event.type == pygame.KEYDOWN:
+                if event.key == pygame.K_a or event.key == pygame.K_LEFT:
+                    moving_left = True
+                if event.key == pygame.K_d or event.key == pygame.K_RIGHT:
+                    moving_right = True
+                if event.key == pygame.K_SPACE and bullets > 0 and player.alive:
+                    if player.flip:
+                        bullet = Bullet(player.rect.left, player.rect.centery + 15, player.direction, 'Textures/bullet.png')
+                    else:
+                        bullet = Bullet(player.rect.right, player.rect.centery + 15, player.direction, 'Textures/bullet.png')
+                    bullet_group.add(bullet)
+                    bullets -= 1
+                if event.key == pygame.K_ESCAPE:
+                    game_state = "paused"
+                if event.key == pygame.K_w:
+                    player.jump = True
+            if event.type == pygame.KEYUP:
+                if event.key == pygame.K_a or event.key == pygame.K_LEFT:
+                    moving_left = False
+                if event.key == pygame.K_d or event.key == pygame.K_RIGHT:
+                    moving_right = False
+
+        if pygame.sprite.spritecollide(player, weapon_group, True, pygame.sprite.collide_mask) and player.alive:
+            bullets = 15
+            weapon_collected = True
+            player.weapon_image = pygame.image.load('Textures/gun.png')
+
+        if bullets == 0:
+            weapon_collected = False
+            player.weapon_image = None
+
+    elif game_state == "paused":
+        screen.blit(menu_background, (0, 0))
+        resume_button.draw()
+        quit_button = Button("Quit", 300, 300, 200, 50)
+        quit_button.draw()
+
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                run = False
+            if event.type == pygame.MOUSEBUTTONDOWN:
+                if resume_button.is_clicked(event.pos):
+                    game_state = "running"
+                if quit_button.is_clicked(event.pos):
+                    run = False
+
+    pygame.display.update()    
 pygame.quit()
