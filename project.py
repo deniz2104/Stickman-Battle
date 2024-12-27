@@ -2,6 +2,30 @@ import pygame
 import random
 import math
 
+class Button:
+    def __init__(self, text, x, y, width, height):
+        self.text = text
+        self.rect = pygame.Rect(x, y, width, height)
+        self.color = (100, 100, 200)
+
+    def draw(self):
+        pygame.draw.rect(screen, self.color, self.rect)
+        pygame.draw.rect(screen, (255, 255, 255), self.rect, 2)
+        text_surface = font.render(self.text, True, (255, 255, 255))
+        text_rect = text_surface.get_rect(center=self.rect.center)
+        screen.blit(text_surface, text_rect)
+
+    def is_clicked(self, pos):
+        return self.rect.collidepoint(pos)
+
+class Medkit(pygame.sprite.Sprite):
+    def __init__(self,x, y,image_path):
+        pygame.sprite.Sprite.__init__(self)
+        self.image = pygame.image.load(image_path).convert_alpha()  
+        self.rect =self.image.get_rect()      
+        self.mask = pygame.mask.from_surface(self.image)
+        self.rect.center=(x,y)
+
 class Wall(pygame.sprite.Sprite):
     def __init__(self, x, y, width, height):
         pygame.sprite.Sprite.__init__(self)
@@ -27,6 +51,7 @@ class Urzicarius(pygame.sprite.Sprite):
         self.image_left = pygame.image.load('Textures/personaj_joc_left.png').convert_alpha()
         self.rect = self.image.get_rect()
         self.weapon_image=None
+        self.medkit_image=None
         self.rect.center = (x, y)
         self.current_health = 1000
         self.max_health = 1000
@@ -240,6 +265,7 @@ wall_right=Wall(780,0,20, SCREEN_WIDTH)
 weapon_group = pygame.sprite.Group()
 bullet_group = pygame.sprite.Group()
 enemy_group = pygame.sprite.Group()
+medkit_group = pygame.sprite.Group()
 enemy_group.add(enemy)
 
 bullets = 0
@@ -247,28 +273,16 @@ bullets = 0
 WEAPON_SPAWN_EVENT = pygame.USEREVENT + 1
 pygame.time.set_timer(WEAPON_SPAWN_EVENT, 2000)
 
+MEDkit_SPAWN_EVENT = pygame.USEREVENT + 2
+pygame.time.set_timer(MEDkit_SPAWN_EVENT, 3000)
+
 moving_left = False
 moving_right = False
+medkit_collected = False
 
 game_state = "menu" 
 
 font = pygame.font.SysFont(None, 48)
-
-class Button:
-    def __init__(self, text, x, y, width, height):
-        self.text = text
-        self.rect = pygame.Rect(x, y, width, height)
-        self.color = (100, 100, 200)
-
-    def draw(self):
-        pygame.draw.rect(screen, self.color, self.rect)
-        pygame.draw.rect(screen, (255, 255, 255), self.rect, 2)
-        text_surface = font.render(self.text, True, (255, 255, 255))
-        text_rect = text_surface.get_rect(center=self.rect.center)
-        screen.blit(text_surface, text_rect)
-
-    def is_clicked(self, pos):
-        return self.rect.collidepoint(pos)
 
 start_button = Button("Start", 300, 200, 200, 50)
 option_button = Button("Option", 300, 300, 200, 50)
@@ -306,6 +320,7 @@ while run:
             player.animate_idle()
 
         weapon_group.draw(screen)
+        medkit_group.draw(screen)
         bullet_group.update()
         bullet_group.draw(screen)
 
@@ -326,6 +341,12 @@ while run:
                     y = SCREEN_HEIGHT // 1.5
                     weapon = Weapon(x, y, 'Textures/gun.png')
                     weapon_group.add(weapon)
+            if event.type == MEDkit_SPAWN_EVENT and not medkit_collected and player.alive and player.current_health<player.max_health//1.2:
+                if not medkit_group:
+                    x = random.randint(100, SCREEN_WIDTH - 50)
+                    y = SCREEN_HEIGHT // 1.5
+                    medkit = Medkit(x, y, 'Textures/medkit.png')
+                    medkit_group.add(medkit)
             if event.type == pygame.KEYDOWN:
                 if event.key == pygame.K_a or event.key == pygame.K_LEFT:
                     moving_left = True
@@ -353,9 +374,17 @@ while run:
             weapon_collected = True
             player.weapon_image = pygame.image.load('Textures/gun.png')
 
+        if pygame.sprite.spritecollide(player, medkit_group, True, pygame.sprite.collide_mask) and player.alive:
+            player.get_health(100)
+            medkit_collected = True
+            player.medkit_image = pygame.image.load('Textures/medkit.png')
+
         if bullets == 0:
             weapon_collected = False
             player.weapon_image = None
+        if medkit_collected==True:
+            medkit_collected = False
+            player.medkit_image = None
 
     elif game_state == "paused":
         screen.blit(menu_background, (0, 0))
