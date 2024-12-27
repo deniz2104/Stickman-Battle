@@ -203,12 +203,10 @@ while run:
                     bullets = 0
                     weapon_collected = False
                     medkit_collected = False
-                    enemy_group.empty()
                     weapon_group.empty()
                     medkit_group.empty()
-                    enemy_group.add(enemy)
+                    enemy.rect.x =700
                     game_state="menu"
-                    screen.blit(menu_background, (0, 0))
                 if quit_button.is_clicked(event.pos):
                     run = False
 
