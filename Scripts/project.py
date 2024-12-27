@@ -283,7 +283,7 @@ medkit_collected = False
 
 game_state = "menu" 
 
-font = pygame.font.SysFont(None, 48)
+font = pygame.font.SysFont("arialblack", 40)
 
 start_button = Button("Start", 300, 200, 200, 50)
 option_button = Button("Option", 300, 300, 200, 50)
@@ -424,7 +424,7 @@ while run:
         quit_button = Button("Quit", 300, 300, 200, 50)
         quit_button.draw()
         game_over_text=font.render('GAME OVER', True, (200, 200, 200))
-        screen.blit(game_over_text,(SCREEN_WIDTH//2-(game_over_text.get_width()/2),SCREEN_HEIGHT//4.5))
+        screen.blit(game_over_text,(SCREEN_WIDTH//2-(game_over_text.get_width()/2),SCREEN_HEIGHT//5))
         screen.blit(game_over_image, (0, 0))
 
         for event in pygame.event.get():
@@ -441,7 +441,7 @@ while run:
         quit_button = Button("Quit", 300, 300, 200, 50)
         quit_button.draw()
         win_text=font.render('YOU WIN', True, (200, 200, 200))
-        screen.blit(win_text,(SCREEN_WIDTH//2-(win_text.get_width()/2),SCREEN_HEIGHT//4))
+        screen.blit(win_text,(SCREEN_WIDTH//2-(win_text.get_width()/2),SCREEN_HEIGHT//5))
         screen.blit(win_image, (0, 0))
 
         for event in pygame.event.get():
