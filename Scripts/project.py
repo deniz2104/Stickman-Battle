@@ -183,21 +183,32 @@ while run:
                 if quit_button.is_clicked(event.pos):
                     run = False
 
-    elif game_state == "game_over":
+    elif game_state == "game_over" or game_state == "win":
         restart_button = Button("Restart", 300, 200, 200, 50)
         restart_button.draw()
         quit_button = Button("Quit", 300, 300, 200, 50)
         quit_button.draw()
-        game_over_text = font.render('GAME OVER', True, (200, 200, 200))
-        screen.blit(game_over_text, (SCREEN_WIDTH // 2 - (game_over_text.get_width() / 2), SCREEN_HEIGHT // 5))
-        screen.blit(game_over_image, (0, 0))
+        if game_state == "game_over":
+            game_over_text = font.render('GAME OVER', True, (200, 200, 200))
+            screen.blit(game_over_text, (SCREEN_WIDTH // 2 - (game_over_text.get_width() / 2), SCREEN_HEIGHT // 5))
+            screen.blit(game_over_image, (0, 0))
+        else:
+            win_text = font.render('YOU WIN', True, (200, 200, 200))
+            screen.blit(win_text, (SCREEN_WIDTH // 2 - (win_text.get_width() / 2), SCREEN_HEIGHT // 5))
+            screen.blit(win_image, (0, 0))
 
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 run = False
             if event.type == pygame.MOUSEBUTTONDOWN:
                 if restart_button.is_clicked(event.pos):
-                    player = Urzicarius(100, SCREEN_HEIGHT // 1.5, 5)
+                    if game_state=="win":
+                        enemy.alive =True
+                        enemy.health = enemy.max_health
+                        enemy_group.empty()
+                        enemy_group.add(enemy)
+                        enemy.rect.y=340
+                    player.rect.x=100
                     player.alive = True
                     player.current_health = player.max_health
                     bullets = 0
@@ -205,38 +216,21 @@ while run:
                     medkit_collected = False
                     weapon_group.empty()
                     medkit_group.empty()
-                    enemy.rect.x =700
+                    enemy.rect.x = 680
                     game_state="menu"
                 if quit_button.is_clicked(event.pos):
                     run = False
 
-    elif game_state == "win":
-        restart_button = Button("Restart", 300, 200, 200, 50) 
-        restart_button.draw()
-        quit_button = Button("Quit", 300, 300, 200, 50)
-        quit_button.draw()
-        win_text = font.render('YOU WIN', True, (200, 200, 200))
-        screen.blit(win_text, (SCREEN_WIDTH // 2 - (win_text.get_width() / 2), SCREEN_HEIGHT // 5))
-        screen.blit(win_image, (0, 0))
+    #elif game_state == "win":
+       # restart_button = Button("Restart", 300, 200, 200, 50) 
+        #restart_button.draw()
+       # quit_button = Button("Quit", 300, 300, 200, 50)
+        #quit_button.draw()
+        #win_text = font.render('YOU WIN', True, (200, 200, 200))
+        #screen.blit(win_text, (SCREEN_WIDTH // 2 - (win_text.get_width() / 2), SCREEN_HEIGHT // 5))
+        #screen.blit(win_image, (0, 0))
 
-        for event in pygame.event.get():
-            if event.type == pygame.QUIT:
-                run = False
-            if event.type == pygame.MOUSEBUTTONDOWN:
-                if restart_button.is_clicked(event.pos):
-                    player = Urzicarius(100, SCREEN_HEIGHT // 1.5, 5)
-                    player.alive = True
-                    player.current_health = player.max_health
-                    bullets = 0
-                    weapon_collected = False
-                    medkit_collected = False
-                    enemy_group.empty()
-                    weapon_group.empty()
-                    medkit_group.empty()
-                    enemy_group.add(enemy)
-                    game_state="menu"
-                    screen.blit(menu_background, (0, 0))
-                if quit_button.is_clicked(event.pos):
-                    run = False
+        #for event in pygame.event.get():
+         ################= False
     pygame.display.update()    
 pygame.quit()
