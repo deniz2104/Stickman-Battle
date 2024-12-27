@@ -54,8 +54,7 @@ game_state = "menu"
 font = pygame.font.SysFont("arialblack", 40)
 
 start_button = Button("Start", 300, 200, 200, 50)
-option_button = Button("Option", 300, 300, 200, 50)
-quit_button = Button("Quit", 300, 400, 200, 50)
+quit_button = Button("Quit", 300, 300, 200, 50)
 resume_button = Button("Resume", 300, 200, 200, 50)
 menu_background = pygame.image.load('../Textures/win_and_first_background.png').convert_alpha()
 game_over_image=pygame.image.load('../Textures/lose_screen.png').convert_alpha()
@@ -75,7 +74,6 @@ while run:
 
     if game_state == "menu":
         start_button.draw()
-        option_button.draw()
         quit_button.draw()
         screen.blit(menu_background, (0, 0))
 
@@ -168,7 +166,6 @@ while run:
             game_state = "game_over"
 
         if enemy.health <= 0:
-            enemy_group.remove(enemy)
             game_state= "win"
 
     elif game_state == "paused":
@@ -186,13 +183,13 @@ while run:
                 if quit_button.is_clicked(event.pos):
                     run = False
 
-    elif game_state=="game_over":
-        restart_button=Button("Restart",300,200,200,50)
+    elif game_state == "game_over":
+        restart_button = Button("Restart", 300, 200, 200, 50)
         restart_button.draw()
         quit_button = Button("Quit", 300, 300, 200, 50)
         quit_button.draw()
-        game_over_text=font.render('GAME OVER', True, (200, 200, 200))
-        screen.blit(game_over_text,(SCREEN_WIDTH//2-(game_over_text.get_width()/2),SCREEN_HEIGHT//5))
+        game_over_text = font.render('GAME OVER', True, (200, 200, 200))
+        screen.blit(game_over_text, (SCREEN_WIDTH // 2 - (game_over_text.get_width() / 2), SCREEN_HEIGHT // 5))
         screen.blit(game_over_image, (0, 0))
 
         for event in pygame.event.get():
@@ -200,16 +197,28 @@ while run:
                 run = False
             if event.type == pygame.MOUSEBUTTONDOWN:
                 if restart_button.is_clicked(event.pos):
-                    game_state = "menu"
+                    player = Urzicarius(100, SCREEN_HEIGHT // 1.5, 5)
+                    player.alive = True
+                    player.current_health = player.max_health
+                    bullets = 0
+                    weapon_collected = False
+                    medkit_collected = False
+                    enemy_group.empty()
+                    weapon_group.empty()
+                    medkit_group.empty()
+                    enemy_group.add(enemy)
+                    game_state="menu"
+                    screen.blit(menu_background, (0, 0))
                 if quit_button.is_clicked(event.pos):
                     run = False
-    elif game_state=="win":
-        restart_button=Button("Restart",300,200,200,50)
+
+    elif game_state == "win":
+        restart_button = Button("Restart", 300, 200, 200, 50) 
         restart_button.draw()
         quit_button = Button("Quit", 300, 300, 200, 50)
         quit_button.draw()
-        win_text=font.render('YOU WIN', True, (200, 200, 200))
-        screen.blit(win_text,(SCREEN_WIDTH//2-(win_text.get_width()/2),SCREEN_HEIGHT//5))
+        win_text = font.render('YOU WIN', True, (200, 200, 200))
+        screen.blit(win_text, (SCREEN_WIDTH // 2 - (win_text.get_width() / 2), SCREEN_HEIGHT // 5))
         screen.blit(win_image, (0, 0))
 
         for event in pygame.event.get():
@@ -217,7 +226,18 @@ while run:
                 run = False
             if event.type == pygame.MOUSEBUTTONDOWN:
                 if restart_button.is_clicked(event.pos):
-                    game_state = "menu"
+                    player = Urzicarius(100, SCREEN_HEIGHT // 1.5, 5)
+                    player.alive = True
+                    player.current_health = player.max_health
+                    bullets = 0
+                    weapon_collected = False
+                    medkit_collected = False
+                    enemy_group.empty()
+                    weapon_group.empty()
+                    medkit_group.empty()
+                    enemy_group.add(enemy)
+                    game_state="menu"
+                    screen.blit(menu_background, (0, 0))
                 if quit_button.is_clicked(event.pos):
                     run = False
     pygame.display.update()    
