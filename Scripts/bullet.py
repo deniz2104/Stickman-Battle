@@ -1,5 +1,8 @@
 import pygame
-from variables_and_constants import enemy,wall_left,wall_right
+from player import wall_left, wall_right
+from variables_and_constants import SCREEN_HEIGHT
+from enemy import Enemy
+enemy = Enemy(680, SCREEN_HEIGHT // 1.5, 1, '../Textures/big_boss.png')
 class Bullet(pygame.sprite.Sprite):
     def __init__(self, x, y, direction, image_path):
         pygame.sprite.Sprite.__init__(self)

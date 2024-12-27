@@ -1,11 +1,14 @@
 import pygame
 import math
-from variables_and_constants import screen,wall_left,wall_right,GRAVITY
+from Wall import Wall
+from variables_and_constants import screen,GRAVITY,SCREEN_WIDTH
+wall_left=Wall(0,0,20, SCREEN_WIDTH)
+wall_right=Wall(780,0,20, SCREEN_WIDTH)
 class Urzicarius(pygame.sprite.Sprite):
     def __init__(self, x, y, speed):
         pygame.sprite.Sprite.__init__(self)
         self.speed = speed
-        self.default_image = pygame.image.load('Textures/personaj_joc.png').convert_alpha()
+        self.default_image = pygame.image.load('../Textures/personaj_joc.png').convert_alpha()
         self.image = self.default_image
         self.mask = pygame.mask.from_surface(self.image)
         self.jump=False
@@ -13,7 +16,7 @@ class Urzicarius(pygame.sprite.Sprite):
         self.flip = False
         self.velocity_y=0
         self.direction = 1
-        self.image_left = pygame.image.load('Textures/personaj_joc_left.png').convert_alpha()
+        self.image_left = pygame.image.load('../Textures/personaj_joc_left.png').convert_alpha()
         self.rect = self.image.get_rect()
         self.weapon_image=None
         self.medkit_image=None
