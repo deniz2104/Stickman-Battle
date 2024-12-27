@@ -1,23 +1,31 @@
 import pygame
-from project import screen,wall_left,wall_right
+import math
+from variables_and_constants import screen,wall_left,wall_right,GRAVITY
 class Urzicarius(pygame.sprite.Sprite):
     def __init__(self, x, y, speed):
         pygame.sprite.Sprite.__init__(self)
         self.speed = speed
-        self.default_image = pygame.image.load('personaj_joc.png')
+        self.default_image = pygame.image.load('Textures/personaj_joc.png').convert_alpha()
         self.image = self.default_image
+        self.mask = pygame.mask.from_surface(self.image)
+        self.jump=False
+        self.in_air=True
         self.flip = False
+        self.velocity_y=0
         self.direction = 1
-        self.image_left = pygame.image.load('personaj_joc_left.png')
+        self.image_left = pygame.image.load('Textures/personaj_joc_left.png').convert_alpha()
         self.rect = self.image.get_rect()
         self.weapon_image=None
+        self.medkit_image=None
         self.rect.center = (x, y)
         self.current_health = 1000
         self.max_health = 1000
         self.health_bar_length = 300
         self.health_ratio = self.max_health / self.health_bar_length
-        self.health_ratio_for_healthbar =self.max_health / self.health_bar_length 
         self.alive = True
+        self.frame = 1
+        self.last_frame_update = 0
+        self.frame_duration = 100
 
     def draw(self):
         if self.alive:
@@ -35,6 +43,7 @@ class Urzicarius(pygame.sprite.Sprite):
             return
 
         dx = 0
+        dy = 0
         if moving_left:
             dx -= self.speed
             self.flip = True
@@ -52,6 +61,22 @@ class Urzicarius(pygame.sprite.Sprite):
             self.image = self.default_image
         self.rect.x += dx
 
+        if self.jump==True and self.in_air==False:
+            self.velocity_y = -11
+            self.jump=False
+            self.in_air=True
+
+        self.velocity_y += GRAVITY
+        if self.velocity_y > 10:
+            self.velocity_y = 10
+        dy += self.velocity_y
+
+        if dy + self.rect.bottom > 500:
+            dy = 500 - self.rect.bottom
+            self.in_air=False
+        else:
+            self.in_air=True
+        self.rect.y+=dy
     def get_damage(self, amount):
         if self.alive:
             self.current_health -= amount
@@ -85,4 +110,21 @@ class Urzicarius(pygame.sprite.Sprite):
         if self.current_health < self.max_health / 4:
             pygame.draw.rect(screen, (255, 0, 0), (25, 10, self.current_health / self.health_ratio, 20))
             pygame.draw.rect(screen, (255, 255, 255), (25, 10, self.health_bar_length, 20), 4)
+    
+    def animate_idle(self):
+        self.frame_duration = 2500  
+        self.scale_range=(0.99,1.02)
+        now =pygame.time.get_ticks()  
 
+        cycle_progress = (now % self.frame_duration) / self.frame_duration
+
+        min_scale, max_scale = self.scale_range
+        scale_factor = min_scale + (max_scale - min_scale) * (0.5 * (1 + math.sin(2 * math.pi * cycle_progress)))
+        
+        original_width, original_height = self.default_image.get_size()
+        new_width = int(original_width * scale_factor)
+        new_height = int(original_height * scale_factor)
+
+        self.image = pygame.transform.scale(self.default_image, (new_width, new_height))
+        self.rect = self.image.get_rect(center=self.rect.center)  
+        self.mask = pygame.mask.from_surface(self.image)
