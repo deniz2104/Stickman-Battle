@@ -269,6 +269,12 @@ medkit_group = pygame.sprite.Group()
 enemy_group.add(enemy)
 
 bullets = 0
+bg = pygame.image.load("Textures/bg.png").convert()
+bg_width = bg.get_width()
+bg_rect = bg.get_rect()
+
+scroll = 0
+tiles = math.ceil(SCREEN_WIDTH  / bg_width) + 1
 
 WEAPON_SPAWN_EVENT = pygame.USEREVENT + 1
 pygame.time.set_timer(WEAPON_SPAWN_EVENT, 2000)
@@ -293,7 +299,16 @@ run = True
 while run:
 
     clock.tick(FPS)
-    screen.fill((144, 201, 120))
+    for i in range(0, tiles):
+        screen.blit(bg, (i * bg_width + scroll, 0))
+        bg_rect.x = i * bg_width + scroll
+
+     #scroll background
+    scroll -= 3
+
+  #reset scroll
+    if abs(scroll) > bg_width:
+        scroll = 0
 
     if game_state == "menu":
         start_button.draw()
