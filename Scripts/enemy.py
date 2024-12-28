@@ -4,6 +4,8 @@ class Enemy(pygame.sprite.Sprite):
     def __init__(self, x, y, speed, image_path):
         pygame.sprite.Sprite.__init__(self)
         self.image = pygame.image.load(image_path).convert_alpha()
+        self.flip = False
+        self.direction = 1
         self.rect = self.image.get_rect()
         self.rect.center = (x, y)
         self.speed = speed
@@ -14,14 +16,18 @@ class Enemy(pygame.sprite.Sprite):
 
     def draw(self):
         if self.alive:
-            screen.blit(self.image, self.rect)
+            screen.blit(pygame.transform.flip(self.image,self.flip,False),self.rect)
             self.basic_health()
     def update(self, player):
         if self.alive:
             if player.rect.x > self.rect.x:
                 self.rect.x += self.speed
+                self.flip = False
+                self.direction =1 
             elif player.rect.x < self.rect.x:
                 self.rect.x -= self.speed
+                self.flip = True
+                self.direction = -1
 
     def attack(self, player):
         if self.rect.colliderect(player.rect):
