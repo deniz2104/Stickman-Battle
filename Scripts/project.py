@@ -1,4 +1,4 @@
-import pygame,math,random
+import pygame,math,random,time
 from player import Urzicarius
 from enemy import Enemy
 from bullet import Bullet,enemy
@@ -8,19 +8,27 @@ from weapon import Weapon
 from variables_and_constants import SCREEN_WIDTH,screen,SCREEN_HEIGHT,FPS
 class Button:
     def __init__(self, text, x, y, width, height):
-        self.text = text
-        self.rect = pygame.Rect(x, y, width, height)
-        self.color = (100, 100, 200)
+        self.original_y_pos=y
+        self.top_rect = pygame.Rect(x, y, width, height)
+        self.top_color = '#475F77'
+        self.text_surf = font.render(text,True,(255,255,255))
+        self.text_rect = self.text_surf.get_rect(center=self.top_rect.center) 
 
     def draw(self):
-        pygame.draw.rect(screen, self.color, self.rect)
-        pygame.draw.rect(screen, (255, 255, 255), self.rect, 2)
-        text_surface = font.render(self.text, True, (255, 255, 255))
-        text_rect = text_surface.get_rect(center=self.rect.center)
-        screen.blit(text_surface, text_rect)
+        pygame.draw.rect(screen, self.top_color, self.top_rect,border_radius=40)
+        pygame.draw.rect(screen, (255, 255, 255), self.top_rect, 2,border_radius=40)
+        screen.blit(self.text_surf, self.text_rect)
+        self.is_clicked(pygame.mouse.get_pos())
 
     def is_clicked(self, pos):
-        return self.rect.collidepoint(pos)
+        mouse_pos=pygame.mouse.get_pos()
+        if self.top_rect.collidepoint(mouse_pos):
+            self.top_color='#D74B4B'
+        else:
+            self.top_color='#475F77'
+        return self.top_rect.collidepoint(pos)
+
+
 pygame.init()
 pygame.display.set_caption('Urzicarius Battle')
 clock = pygame.time.Clock()
@@ -51,9 +59,11 @@ medkit_collected = False
 
 game_state = "menu" 
 
-font = pygame.font.SysFont("arialblack", 40)
+font = pygame.font.SysFont("arialblack", 35)
+
 
 start_button = Button("Start", 300, 200, 200, 50)
+restart_button = Button("Restart", 300, 200, 200, 50)
 quit_button = Button("Quit", 300, 300, 200, 50)
 resume_button = Button("Resume", 300, 200, 200, 50)
 menu_background = pygame.image.load('../Textures/win_and_first_background.png').convert_alpha()
@@ -162,7 +172,7 @@ while run:
             medkit_collected = False
             player.medkit_image = None
 
-        if player.current_health <=0:
+        if player.current_health <= 0:
             game_state = "game_over"
 
         if enemy.health <= 0:
@@ -171,7 +181,6 @@ while run:
     elif game_state == "paused":
         screen.blit(menu_background, (0, 0))
         resume_button.draw()
-        quit_button = Button("Quit", 300, 300, 200, 50)
         quit_button.draw()
 
         for event in pygame.event.get():
@@ -184,9 +193,7 @@ while run:
                     run = False
 
     elif game_state == "game_over" or game_state == "win":
-        restart_button = Button("Restart", 300, 200, 200, 50)
         restart_button.draw()
-        quit_button = Button("Quit", 300, 300, 200, 50)
         quit_button.draw()
         if game_state == "game_over":
             game_over_text = font.render('GAME OVER', True, (200, 200, 200))
@@ -220,17 +227,5 @@ while run:
                     game_state="menu"
                 if quit_button.is_clicked(event.pos):
                     run = False
-
-    #elif game_state == "win":
-       # restart_button = Button("Restart", 300, 200, 200, 50) 
-        #restart_button.draw()
-       # quit_button = Button("Quit", 300, 300, 200, 50)
-        #quit_button.draw()
-        #win_text = font.render('YOU WIN', True, (200, 200, 200))
-        #screen.blit(win_text, (SCREEN_WIDTH // 2 - (win_text.get_width() / 2), SCREEN_HEIGHT // 5))
-        #screen.blit(win_image, (0, 0))
-
-        #for event in pygame.event.get():
-         ################= False
     pygame.display.update()    
 pygame.quit()
