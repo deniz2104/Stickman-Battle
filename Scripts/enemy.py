@@ -25,12 +25,12 @@ class Enemy(pygame.sprite.Sprite):
         if self.alive:
             if player.rect.x > self.rect.x:
                 self.rect.x += self.speed
-                self.flip = False
-                self.direction =1 
+                self.flip = True
+                self.direction = -1 
             elif player.rect.x < self.rect.x:
                 self.rect.x -= self.speed
-                self.flip = True
-                self.direction = -1
+                self.flip = False
+                self.direction = 1
         else:
             self.kill()
             self.rect = pygame.Rect(0, 0, 0, 0)
