@@ -14,6 +14,7 @@ class Urzicarius(pygame.sprite.Sprite):
         self.jump=False
         self.in_air=True
         self.flip = False
+        self.displayed_health=False
         self.velocity_y=0
         self.direction = 1
         self.image_left = pygame.image.load('../Textures/personaj_joc_left.png').convert_alpha()
@@ -38,7 +39,7 @@ class Urzicarius(pygame.sprite.Sprite):
                     screen.blit(self.weapon_image, (self.rect.centerx + 60, self.rect.centery))
                 else:  
                     screen.blit(pygame.transform.flip(self.weapon_image, True, False), (self.rect.centerx - 100, self.rect.centery))
-        self.basic_health()
+            self.basic_health()
 
 
     def move(self, moving_left, moving_right):
@@ -79,7 +80,6 @@ class Urzicarius(pygame.sprite.Sprite):
             self.in_air=False
         else:
             self.in_air=True
-        self.rect.y+=dy
     def get_damage(self, amount):
         if self.alive:
             self.current_health -= amount
@@ -94,25 +94,25 @@ class Urzicarius(pygame.sprite.Sprite):
                 self.current_health = self.max_health
 
     def basic_health(self):
-        if not hasattr(self, 'displayed_health'):
-            self.displayed_health = self.current_health
+            if not self.displayed_health:
+                self.displayed_health = self.current_health
 
-        if self.displayed_health > self.current_health:
-            self.displayed_health -= 3 
+            if self.displayed_health > self.current_health:
+                self.displayed_health -= 3 
 
-        pygame.draw.rect(screen, (0, 255, 0), (25, 10, self.current_health / self.health_ratio, 20))
-        pygame.draw.rect(screen, (255, 255, 255), (25, 10, self.health_bar_length, 20), 4)
-
-        pygame.draw.rect(screen, (204, 160, 29), (25 + self.current_health / self.health_ratio, 10, 
-                     (self.displayed_health - self.current_health) / self.health_ratio, 20))
-        pygame.draw.rect(screen, (255, 255, 255), (25, 10, self.health_bar_length, 20), 4)
-
-        if self.current_health < self.max_health / 2:
-            pygame.draw.rect(screen, (255, 255, 0), (25, 10, self.current_health / self.health_ratio, 20))
-            pygame.draw.rect(screen, (255, 255, 255),(25, 10, self.health_bar_length, 20), 4)
-        if self.current_health < self.max_health / 4:
-            pygame.draw.rect(screen, (255, 0, 0), (25, 10, self.current_health / self.health_ratio, 20))
+            pygame.draw.rect(screen, (0, 255, 0), (25, 10, self.current_health / self.health_ratio, 20))
             pygame.draw.rect(screen, (255, 255, 255), (25, 10, self.health_bar_length, 20), 4)
+
+            pygame.draw.rect(screen, (204, 160, 29), (25 + self.current_health / self.health_ratio, 10, 
+                        (self.displayed_health - self.current_health) / self.health_ratio, 20))
+            pygame.draw.rect(screen, (255, 255, 255), (25, 10, self.health_bar_length, 20), 4)
+
+            if self.current_health < self.max_health / 2:
+                pygame.draw.rect(screen, (255, 255, 0), (25, 10, self.current_health / self.health_ratio, 20))
+                pygame.draw.rect(screen, (255, 255, 255),(25, 10, self.health_bar_length, 20), 4)
+            if self.current_health < self.max_health / 4:
+                pygame.draw.rect(screen, (255, 0, 0), (25, 10, self.current_health / self.health_ratio, 20))
+                pygame.draw.rect(screen, (255, 255, 255), (25, 10, self.health_bar_length, 20), 4)
     
     def animate_idle(self):
         self.frame_duration = 2500  

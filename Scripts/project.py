@@ -1,42 +1,44 @@
-import pygame,math,random,time
+import pygame, math, random, time
 from player import Urzicarius
 from enemy import Enemy
-from bullet import Bullet,enemy
+from bullet import Bullet
 from Medkit import Medkit
-from player import wall_left,wall_right
+from player import wall_left, wall_right
 from weapon import Weapon
-from variables_and_constants import SCREEN_WIDTH,screen,SCREEN_HEIGHT,FPS
+from variables_and_constants import SCREEN_WIDTH, screen, SCREEN_HEIGHT, FPS
+
 class Button:
     def __init__(self, text, x, y, width, height):
-        self.original_y_pos=y
+        self.original_y_pos = y
         self.top_rect = pygame.Rect(x, y, width, height)
         self.top_color = '#475F77'
-        self.text_surf = font.render(text,True,(255,255,255))
+        self.text_surf = font.render(text, True, (255, 255, 255))
         self.text_rect = self.text_surf.get_rect(center=self.top_rect.center) 
 
     def draw(self):
-        pygame.draw.rect(screen, self.top_color, self.top_rect,border_radius=40)
-        pygame.draw.rect(screen, (255, 255, 255), self.top_rect, 2,border_radius=40)
+        pygame.draw.rect(screen, self.top_color, self.top_rect, border_radius=40)
+        pygame.draw.rect(screen, (255, 255, 255), self.top_rect, 2, border_radius=40)
         screen.blit(self.text_surf, self.text_rect)
         self.is_clicked(pygame.mouse.get_pos())
 
     def is_clicked(self, pos):
-        mouse_pos=pygame.mouse.get_pos()
+        mouse_pos = pygame.mouse.get_pos()
         if self.top_rect.collidepoint(mouse_pos):
-            self.top_color='#D74B4B'
+            self.top_color = '#D74B4B'
         else:
-            self.top_color='#475F77'
+            self.top_color = '#475F77'
         return self.top_rect.collidepoint(pos)
-
 
 pygame.init()
 pygame.display.set_caption('Urzicarius Battle')
 clock = pygame.time.Clock()
 player = Urzicarius(100, SCREEN_HEIGHT // 1.5, 5)
+player.weapon_damage = 20  # Added weapon damage attribute
 weapon_group = pygame.sprite.Group()
 bullet_group = pygame.sprite.Group()
 enemy_group = pygame.sprite.Group()
 medkit_group = pygame.sprite.Group()
+enemy = Enemy(400, 425, 1, '../Textures/big_boss.png')
 enemy_group.add(enemy)
 
 bullets = 0
@@ -45,7 +47,7 @@ bg_width = bg.get_width()
 bg_rect = bg.get_rect()
 
 scroll = 0
-tiles = math.ceil(SCREEN_WIDTH  / bg_width) + 1
+tiles = math.ceil(SCREEN_WIDTH / bg_width) + 1
 
 WEAPON_SPAWN_EVENT = pygame.USEREVENT + 1
 pygame.time.set_timer(WEAPON_SPAWN_EVENT, 2000)
@@ -57,21 +59,21 @@ moving_left = False
 moving_right = False
 medkit_collected = False
 
-game_state = "menu" 
+game_state = "menu"
 
 font = pygame.font.SysFont("arialblack", 35)
-
 
 start_button = Button("Start", 300, 200, 200, 50)
 restart_button = Button("Restart", 300, 200, 200, 50)
 quit_button = Button("Quit", 300, 300, 200, 50)
 resume_button = Button("Resume", 300, 200, 200, 50)
 menu_background = pygame.image.load('../Textures/win_and_first_background.png').convert_alpha()
-game_over_image=pygame.image.load('../Textures/lose_screen.png').convert_alpha()
+game_over_image = pygame.image.load('../Textures/lose_screen.png').convert_alpha()
 win_image = pygame.image.load('../Textures/win_screen.png').convert_alpha()
-run = True
-while run:
 
+run = True
+
+while run:
     clock.tick(FPS)
     for i in range(0, tiles):
         screen.blit(bg, (i * bg_width + scroll, 0))
@@ -115,6 +117,12 @@ while run:
             enemy.attack(player)
             enemy.draw()
 
+        for bullet in bullet_group:
+            hit_enemy = pygame.sprite.spritecollideany(bullet, enemy_group, pygame.sprite.collide_mask)
+            if hit_enemy:
+                hit_enemy.health -= player.weapon_damage 
+                bullet.kill()  
+
         bullet_text = font.render(f'Bullets: {bullets}', True, (0, 0, 0))
         screen.blit(bullet_text, (25, 40))
 
@@ -127,7 +135,7 @@ while run:
                     y = SCREEN_HEIGHT // 1.5
                     weapon = Weapon(x, y, '../Textures/gun.png')
                     weapon_group.add(weapon)
-            if event.type == MEDkit_SPAWN_EVENT and not medkit_collected and player.alive and player.current_health<player.max_health//1.3:
+            if event.type == MEDkit_SPAWN_EVENT and not medkit_collected and player.alive and player.current_health < player.max_health // 1.3:
                 if not medkit_group:
                     x = random.randint(100, SCREEN_WIDTH - 50)
                     y = SCREEN_HEIGHT // 1.5
@@ -168,7 +176,7 @@ while run:
         if bullets == 0:
             weapon_collected = False
             player.weapon_image = None
-        if medkit_collected==True:
+        if medkit_collected:
             medkit_collected = False
             player.medkit_image = None
 
@@ -176,7 +184,7 @@ while run:
             game_state = "game_over"
 
         if enemy.health <= 0:
-            game_state= "win"
+            game_state = "win"
 
     elif game_state == "paused":
         screen.blit(menu_background, (0, 0))
@@ -209,22 +217,26 @@ while run:
                 run = False
             if event.type == pygame.MOUSEBUTTONDOWN:
                 if restart_button.is_clicked(event.pos):
-                    if game_state=="win":
-                        enemy.alive =True
-                        enemy.health = enemy.max_health
-                        enemy_group.empty()
-                        enemy_group.add(enemy)
-                        enemy.rect.y=340
-                    player.rect.x=100
+                    enemy_group.empty()
+                    enemy = Enemy(200, 200, 1.2, '../Textures/big_boss.png')
+                    enemy.health = enemy.max_health
+                    enemy_group.add(enemy)
+                    enemy.rect.y = 340
+                    player.rect.x = 100
                     player.alive = True
                     player.current_health = player.max_health
+                    player.displayed_health=player.current_health
                     bullets = 0
                     weapon_collected = False
                     medkit_collected = False
                     weapon_group.empty()
                     medkit_group.empty()
                     enemy.rect.x = 680
-                    game_state="menu"
+                    game_state = "menu"
+                    moving_left = False
+                    moving_right = False
+                    player.flip = False
+                    player.direction = 1  
                 if quit_button.is_clicked(event.pos):
                     run = False
     pygame.display.update()    
