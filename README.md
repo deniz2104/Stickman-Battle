@@ -49,7 +49,7 @@ Am implementat multiple clase in vederea implementarii:
 
 ## Modul de desfasurare al jocului:
 
-    Main Menu principal in care se poate iesi din joc sau incepe jocul cu hover asupra butoanelor.Urzicarius trebuie sa gaseasca cat mai repede arma si sa si infranga adversarul.In caz ca pierde multa viata trebuie sa si ia medkit pentru a infrange cat mai repede si a trece la interviul de HR.Inamicul nostru,intervievatorul,nu ne va lasa in pace si va veni constant dupa noi.
+Main Menu principal in care se poate iesi din joc sau incepe jocul cu hover asupra butoanelor.Urzicarius trebuie sa gaseasca cat mai repede arma si sa si infranga adversarul.In caz ca pierde multa viata trebuie sa si ia medkit pentru a infrange cat mai repede si a trece la interviul de HR.Inamicul nostru,intervievatorul,nu ne va lasa in pace si va veni constant dupa noi.
 
 ## Probleme intalnite de-a lungul proiectului:
 
