@@ -116,7 +116,7 @@ class Urzicarius(pygame.sprite.Sprite):
     
     def animate_idle(self):
         self.frame_duration = 2500  
-        self.scale_range=(0.99,1.02)
+        self.scale_range=(0.97,1.03)
         now =pygame.time.get_ticks()  
 
         cycle_progress = (now % self.frame_duration) / self.frame_duration
