@@ -5,7 +5,6 @@ class Enemy(pygame.sprite.Sprite):
         pygame.sprite.Sprite.__init__(self)
         self.image = pygame.image.load(image_path).convert_alpha()
         self.mask = pygame.mask.from_surface(self.image)
-
         self.flip = False
         self.direction = 1
         self.rect = self.image.get_rect()

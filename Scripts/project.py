@@ -7,9 +7,24 @@ from player import wall_left, wall_right
 from weapon import Weapon
 from variables_and_constants import SCREEN_WIDTH, SCREEN_HEIGHT, FPS
 from Button import Button,screen,font
+from itertools import repeat
+
+def make_screen_dynamic():
+    s = -1
+    for _ in range(0,3):
+        for x in range(0,20,10):
+            yield(x*s,0)
+        for x in range(20,0,10):
+            yield(x*s,0)
+        s *= -1
+        while True:
+            yield(0,0)
 
 pygame.init()
 pygame.display.set_caption('Urzicarius Battle')
+copy_of_screen =screen.copy()
+copy_of_screen.fill((0,0,0))
+offset=repeat((0,0))
 clock = pygame.time.Clock()
 player = Urzicarius(100, SCREEN_HEIGHT // 1.5, 5)
 player.weapon_damage = 20
@@ -97,6 +112,7 @@ while run:
         for bullet in bullet_group:
             hit_enemy = pygame.sprite.spritecollideany(bullet, enemy_group, pygame.sprite.collide_mask)
             if hit_enemy:
+                offset=make_screen_dynamic()
                 hit_enemy.health -= player.weapon_damage 
                 bullet.kill()  
 
@@ -216,5 +232,6 @@ while run:
                     player.direction = 1  
                 if quit_button.is_clicked(event.pos):
                     run = False
-    pygame.display.update()    
+    screen.blit(screen,next(offset))  
+    pygame.display.update()
 pygame.quit()
