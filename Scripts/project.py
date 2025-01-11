@@ -22,8 +22,6 @@ def make_screen_dynamic():
 
 pygame.init()
 pygame.display.set_caption('Urzicarius Battle')
-copy_of_screen =screen.copy()
-copy_of_screen.fill((0,0,0))
 offset=repeat((0,0))
 clock = pygame.time.Clock()
 player = Urzicarius(100, SCREEN_HEIGHT // 1.5, 5)

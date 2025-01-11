@@ -4,7 +4,6 @@ from variables_and_constants import SCREEN_HEIGHT
 from enemy import Enemy
 from player import Urzicarius
 enemy = Enemy(680, SCREEN_HEIGHT // 1.5, 1, '../Textures/big_boss.png')
-player = Urzicarius(100, SCREEN_HEIGHT // 1.5, 5)
 class Bullet(pygame.sprite.Sprite):
     def __init__(self, x, y, direction, image_path):
         pygame.sprite.Sprite.__init__(self)
@@ -18,9 +17,6 @@ class Bullet(pygame.sprite.Sprite):
         self.rect.x += self.speed
         if pygame.sprite.collide_mask(self, enemy):
             enemy.get_damage(40)
-            self.kill()
-        if pygame.sprite.collide_mask(self, player):
-            player.get_damage(40)
             self.kill()
         if self.rect.colliderect(wall_right) or self.rect.colliderect(wall_left):
             self.kill()
