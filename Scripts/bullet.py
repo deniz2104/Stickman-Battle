@@ -1,22 +1,31 @@
 import pygame
-from player import wall_left, wall_right
-from variables_and_constants import SCREEN_HEIGHT
-from enemy import Enemy
-from player import Urzicarius
-enemy = Enemy(680, SCREEN_HEIGHT // 1.5, 1, '../Textures/big_boss.png')
+from Scripts.config import SCREEN_HEIGHT, load_texture
+
 class Bullet(pygame.sprite.Sprite):
-    def __init__(self, x, y, direction, image_path):
+    def __init__(self, x, y, direction, image_path, damage=40):
         pygame.sprite.Sprite.__init__(self)
-        self.image = pygame.image.load(image_path).convert_alpha()
+        self.image = load_texture(image_path)
         self.mask = pygame.mask.from_surface(self.image)
         self.rect = self.image.get_rect()
         self.rect.center = (x, y)
         self.speed = 10 * direction
+        self.damage = damage
 
-    def update(self):
+    def update(self, walls=None, enemies=None):
         self.rect.x += self.speed
-        if pygame.sprite.collide_mask(self, enemy):
-            enemy.get_damage(40)
-            self.kill()
-        if self.rect.colliderect(wall_right) or self.rect.colliderect(wall_left):
+
+        if enemies:
+            for enemy in enemies:
+                if pygame.sprite.collide_mask(self, enemy):
+                    enemy.get_damage(self.damage)
+                    self.kill()
+                    return
+
+        if walls:
+            for wall in walls:
+                if self.rect.colliderect(wall.rect):
+                    self.kill()
+                    return
+
+        if self.rect.x < -50 or self.rect.x > SCREEN_HEIGHT + 50:
             self.kill()

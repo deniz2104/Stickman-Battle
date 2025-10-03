@@ -1,31 +1,39 @@
 import pygame
-from variables_and_constants import screen
-class Enemy(pygame.sprite.Sprite):
-    def __init__(self, x, y, speed, image_path):
-        pygame.sprite.Sprite.__init__(self)
-        self.image = pygame.image.load(image_path).convert_alpha()
-        self.mask = pygame.mask.from_surface(self.image)
-        self.flip = False
-        self.direction = 1
-        self.rect = self.image.get_rect()
-        self.rect.center = (x, y)
-        self.speed = speed
-        self.health = 200
-        self.alive=True
-        self.max_health = 200
-        self.health_bar_length = 100
-        self.health_ratio = self.max_health / self.health_bar_length
+from Scripts.config import screen
+from Scripts.base_classes import MovableEntity
 
-    def draw(self):
+
+class Enemy(MovableEntity):
+    def __init__(self, x, y, speed, image_path):
+        super().__init__(x, y, image_path, max_health=200, speed=speed, health_bar_length=100)
+
+    def _on_death(self):
+        self.kill()
+        self.rect = pygame.Rect(0, 0, 0, 0)
+
+    def draw(self, surface=None):
+        if surface is None:
+            surface = screen
+
         if self.alive:
-            screen.blit(pygame.transform.flip(self.image,self.flip,False),self.rect)
-        self.basic_health()
-    def update(self, player):
+            surface.blit(pygame.transform.flip(self.image, self.flip, False), self.rect)
+
+        x_offset = 50 if self.direction == 1 else 10
+        bar_x = self.rect.x + x_offset
+        bar_y = self.rect.y
+        self._draw_health_bar(bar_x, bar_y, height=5, surface=surface)
+
+    def update(self, *args, **kwargs):
+        if args:
+            player = args[0]
+        else:
+            return
+
         if self.alive:
             if player.rect.x > self.rect.x:
                 self.rect.x += self.speed
                 self.flip = True
-                self.direction = -1 
+                self.direction = -1
             elif player.rect.x < self.rect.x:
                 self.rect.x -= self.speed
                 self.flip = False
@@ -37,47 +45,3 @@ class Enemy(pygame.sprite.Sprite):
     def attack(self, player):
         if self.rect.colliderect(player.rect):
             player.get_damage(5)
-
-    def get_damage(self, amount):
-        self.health -= amount
-        if self.health <= 0:
-            self.health = 0
-            self.alive = False
-            self.kill()
-            self.rect = pygame.Rect(0, 0, 0, 0)
-
-    def basic_health(self):
-        if self.alive:
-            if not hasattr(self, 'displayed_health'):
-                self.displayed_health = self.health
-
-            if self.displayed_health > self.health:
-                self.displayed_health -= 1
-            if self.direction ==1:
-                pygame.draw.rect(screen, (0, 255, 0), (self.rect.x + 50, self.rect.y, self.health / self.health_ratio, 5))
-                pygame.draw.rect(screen, (255, 255, 255), (self.rect.x + 50, self.rect.y, self.health_bar_length, 5), 1)
-
-                pygame.draw.rect(screen, (204, 160, 29), (self.rect.x + 50 + self.health / self.health_ratio, self.rect.y, 
-                            (self.displayed_health - self.health) / self.health_ratio, 5))
-                pygame.draw.rect(screen, (255, 255, 255), (self.rect.x+50,self.rect.y , self.health_bar_length, 5), 1)
-
-                if self.health < self.max_health / 2:
-                    pygame.draw.rect(screen, (255, 255, 0), (self.rect.x + 50, self.rect.y, self.health / self.health_ratio, 5))
-                    pygame.draw.rect(screen, (255, 255, 255), (self.rect.x + 50, self.rect.y, self.health_bar_length, 5), 1)
-                if self.health < self.max_health / 4:
-                    pygame.draw.rect(screen, (255, 0, 0), (self.rect.x + 50, self.rect.y, self.health / self.health_ratio, 5))
-                    pygame.draw.rect(screen, (255, 255, 255), (self.rect.x + 50, self.rect.y, self.health_bar_length, 5), 1)
-            elif self.direction == -1:
-                    pygame.draw.rect(screen, (0, 255, 0), (self.rect.x + 10, self.rect.y, self.health / self.health_ratio, 5))
-                    pygame.draw.rect(screen, (255, 255, 255), (self.rect.x + 10, self.rect.y, self.health_bar_length, 5), 1)
-
-                    pygame.draw.rect(screen, (204, 160, 29), (self.rect.x + 10 + self.health / self.health_ratio, self.rect.y, 
-                                (self.displayed_health - self.health) / self.health_ratio, 5))
-                    pygame.draw.rect(screen, (255, 255, 255), (self.rect.x+10,self.rect.y , self.health_bar_length, 5), 1)
-
-                    if self.health < self.max_health / 2:
-                        pygame.draw.rect(screen, (255, 255, 0), (self.rect.x + 10, self.rect.y, self.health / self.health_ratio, 5))
-                        pygame.draw.rect(screen, (255, 255, 255), (self.rect.x + 10, self.rect.y, self.health_bar_length, 5), 1)
-                    if self.health < self.max_health / 4:
-                        pygame.draw.rect(screen, (255, 0, 0), (self.rect.x + 10, self.rect.y, self.health / self.health_ratio, 5))
-                        pygame.draw.rect(screen, (255, 255, 255), (self.rect.x + 10, self.rect.y, self.health_bar_length, 5), 1)

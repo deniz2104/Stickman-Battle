@@ -1,7 +1,13 @@
-import pygame
-class Weapon(pygame.sprite.Sprite):
+from Scripts.base_classes import CollectibleItem
+
+
+class Weapon(CollectibleItem):
     def __init__(self, x, y, image_path):
-        pygame.sprite.Sprite.__init__(self)
-        self.image = pygame.image.load(image_path)
-        self.rect = self.image.get_rect()
-        self.rect.center = (x, y)
+        super().__init__(x, y, image_path)
+
+    def use(self, player):
+        if self.rect.colliderect(player.rect):
+            player.weapon_image = self.image.copy()
+            self.kill()
+            return True
+        return False

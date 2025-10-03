@@ -1,11 +1,18 @@
 import pygame
-from variables_and_constants import screen
-class Wall(pygame.sprite.Sprite):
-    def __init__(self, x, y, width, height):
-        pygame.sprite.Sprite.__init__(self)
-        self.rect =pygame.Rect(x,y,width,height)
-        self.image=pygame.image.load('../Textures/wall_texture.png').convert_alpha()
+from Scripts.config import screen, load_texture
 
-    def draw(self):
-        pygame.draw.rect(screen,(255,255,255),self.rect)
-        screen.blit(self.image,self.rect)
+
+class Wall(pygame.sprite.Sprite):
+    def __init__(self, x, y, width, height, texture_path='wall_texture.png'):
+        pygame.sprite.Sprite.__init__(self)
+        self.rect = pygame.Rect(x, y, width, height)
+
+        self.image = load_texture(texture_path)
+        self.image = pygame.transform.scale(self.image, (width, height))
+
+    def draw(self, surface=None):
+        if surface is None:
+            surface = screen
+
+        pygame.draw.rect(surface, (255, 255, 255), self.rect)
+        surface.blit(self.image, self.rect)
