@@ -34,6 +34,7 @@ def handle_running_events(event, context):
                 bullet = Bullet(player.rect.right, player.rect.centery + 15, player.direction, 'bullet.png', damage=player.weapon_damage)
             context['bullet_group'].add(bullet)
             context['bullets'] -= 1
+            res['shake'] = True
         if event.key == pygame.K_ESCAPE:
             res['game_state'] = 'paused'
         if event.key == pygame.K_w:

@@ -7,16 +7,13 @@ import pygame
 from itertools import repeat
 
 
-def make_screen_dynamic():
-    s = -1
-    for _ in range(0, 3):
-        for offset_x in range(0, 20, 10):
-            yield (offset_x * s, 0)
-        for offset_x in range(20, 0, 10):
-            yield (offset_x * s, 0)
-        s *= -1
-        while True:
-            yield (0, 0)
+def make_screen_dynamic(duration: int = 12, max_offset: int = 6):
+    for i in range(duration):
+        direction = -1 if i % 2 == 0 else 1
+        amp = max(1, int(max_offset - (i * max_offset) / duration))
+        yield (direction * amp, 0)
+    while True:
+        yield (0, 0)
 
 def main():
     context = create_context()
@@ -78,6 +75,8 @@ def main():
                     context['moving_right'] = res['moving_right']
                 if 'game_state' in res:
                     context['game_state'] = res['game_state']
+                if res.get('shake'):
+                    offset = make_screen_dynamic()
 
             for weapon in list(context['weapon_group']):
                 if weapon.use(context['player']) and context['player'].alive:
