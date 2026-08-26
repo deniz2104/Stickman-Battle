@@ -1,5 +1,5 @@
 import pygame
-from Scripts.config import screen, font
+from src.core.config import screen, font
 
 class Button:
     def __init__(self, text, x, y, width, height,

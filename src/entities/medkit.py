@@ -1,4 +1,4 @@
-from Scripts.base_classes import CollectibleItem
+from src.entities.base_classes import CollectibleItem
 
 
 class Medkit(CollectibleItem):

@@ -1,7 +1,7 @@
 import random
-from Scripts.weapon import Weapon
-from Scripts.medkit import Medkit
-from Scripts.config import SCREEN_WIDTH, SCREEN_HEIGHT
+from src.entities.weapon import Weapon
+from src.entities.medkit import Medkit
+from src.core.config import SCREEN_WIDTH, SCREEN_HEIGHT
 
 
 def spawn_weapon_if_needed(event, context):

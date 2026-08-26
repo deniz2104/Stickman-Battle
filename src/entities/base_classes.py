@@ -1,6 +1,6 @@
 from abc import ABC, abstractmethod
 import pygame
-from Scripts.config import screen, load_texture
+from src.core.config import screen, load_texture
 
 class GameObject(pygame.sprite.Sprite, ABC): 
     def __init__(self, x, y, image_path=None):

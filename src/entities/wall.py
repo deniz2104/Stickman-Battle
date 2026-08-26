@@ -1,5 +1,5 @@
 import pygame
-from Scripts.config import screen, load_texture
+from src.core.config import screen, load_texture
 
 
 class Wall(pygame.sprite.Sprite):

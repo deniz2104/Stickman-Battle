@@ -1,5 +1,5 @@
 import pygame
-from Scripts.bullet import Bullet
+from src.entities.bullet import Bullet
 
 
 def handle_menu_events(event, context):
@@ -37,8 +37,6 @@ def handle_running_events(event, context):
             res['shake'] = True
         if event.key == pygame.K_ESCAPE:
             res['game_state'] = 'paused'
-        if event.key == pygame.K_w:
-            player.jump = True
 
     if event.type == pygame.KEYUP:
         if event.key == pygame.K_a or event.key == pygame.K_LEFT:
@@ -65,14 +63,14 @@ def handle_game_over_events(event, context):
         return {'run': False}
     if event.type == pygame.MOUSEBUTTONDOWN:
         if context['restart_button'] and context['restart_button'].is_clicked(event.pos):
-            from Scripts.enemy import Enemy
+            from src.entities.enemy import Enemy
+            pl = context['player']
             eg = context['enemy_group']
             eg.empty()
-            enemy = Enemy(680, 340, 1, 'big_boss.png')
+            enemy = Enemy(680, pl.rect.centery, 1, 'big_boss.png')
             eg.add(enemy)
             context['enemy'] = enemy
-            
-            pl = context['player']
+
             pl.rect.x = 100
             pl.alive = True
             pl.health = pl.max_health

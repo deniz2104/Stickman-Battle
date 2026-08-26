@@ -1,8 +1,8 @@
 import pygame, math
-from Scripts.player import Player
-from Scripts.enemy import Enemy
-from Scripts.player import wall_left, wall_right
-from Scripts.config import SCREEN_WIDTH, SCREEN_HEIGHT, FPS, load_texture, screen, font
+from src.entities.player import Player
+from src.entities.enemy import Enemy
+from src.entities.player import wall_left, wall_right
+from src.core.config import SCREEN_WIDTH, SCREEN_HEIGHT, FPS, load_texture, screen, font
 
 
 def create_context():
@@ -19,7 +19,6 @@ def create_context():
     enemy_group.add(enemy)
 
     bullets = 0
-    enemies_killed = 0
     bg = load_texture("bg.png")
     bg_width = bg.get_width()
     bg_rect = bg.get_rect()
@@ -40,7 +39,7 @@ def create_context():
 
     game_state = "menu"
 
-    from Scripts.button import Button
+    from src.ui.button import Button
     start_button = Button("Start", 300, 200, 200, 50)
     restart_button = Button("Restart", 300, 200, 200, 50)
     quit_button = Button("Quit", 300, 300, 200, 50)
@@ -59,7 +58,6 @@ def create_context():
         'medkit_group': medkit_group,
         'enemy': enemy,
         'bullets': bullets,
-        'enemies_killed': enemies_killed,
         'bg': bg,
         'bg_width': bg_width,
         'bg_rect': bg_rect,

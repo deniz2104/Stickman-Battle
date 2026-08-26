@@ -1,8 +1,8 @@
 import pygame
-from Scripts.game_init import create_context
-from Scripts.spawn import spawn_weapon_if_needed, spawn_medkit_if_needed
-from Scripts.handlers import handle_menu_events, handle_running_events, handle_paused_events, handle_game_over_events
-from Scripts.render import draw_background, draw_hud
+from src.core.game_init import create_context
+from src.core.spawn import spawn_weapon_if_needed, spawn_medkit_if_needed
+from src.core.handlers import handle_menu_events, handle_running_events, handle_paused_events, handle_game_over_events
+from src.ui.render import draw_background, draw_hud
 import pygame
 from itertools import repeat
 
@@ -86,14 +86,12 @@ def main():
             for medkit in list(context['medkit_group']):
                 if medkit.use(context['player']) and context['player'].alive:
                     context['medkit_collected'] = True
-                    context['player'].medkit_image = context['menu_background']
 
             if context['bullets'] == 0:
                 context['weapon_collected'] = False
                 context['player'].weapon_image = None
             if context['medkit_collected']:
                 context['medkit_collected'] = False
-                context['player'].medkit_image = None
 
             if context['player'].health <= 0:
                 context['game_state'] = 'game_over'

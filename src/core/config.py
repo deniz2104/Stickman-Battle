@@ -16,9 +16,9 @@ font = pygame.font.SysFont("arialblack", 35)
 def load_texture(filename):
     possible_paths = [
         filename,
-        f'../Textures/{filename}',
-        f'Textures/{filename}',
-        os.path.join(os.path.dirname(os.path.dirname(__file__)), 'Textures', filename)
+        f'src/textures/{filename}',
+        f'textures/{filename}',
+        os.path.join(os.path.dirname(os.path.dirname(__file__)), 'textures', filename)
     ]
 
     for path in possible_paths:

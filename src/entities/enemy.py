@@ -1,6 +1,6 @@
 import pygame
-from Scripts.config import screen
-from Scripts.base_classes import MovableEntity
+from src.core.config import screen
+from src.entities.base_classes import MovableEntity
 
 
 class Enemy(MovableEntity):

@@ -1,4 +1,4 @@
-from Scripts.config import screen, font
+from src.core.config import screen, font
 
 def draw_background(context):
     bg = context['bg']

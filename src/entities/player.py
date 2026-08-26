@@ -1,8 +1,8 @@
 import pygame
 import math
-from Scripts.wall import Wall
-from Scripts.config import screen, SCREEN_WIDTH, load_texture
-from Scripts.base_classes import MovableEntity
+from src.entities.wall import Wall
+from src.core.config import screen, SCREEN_WIDTH, load_texture
+from src.entities.base_classes import MovableEntity
 
 wall_left = Wall(0, 0, 20, SCREEN_WIDTH)
 wall_right = Wall(780, 0, 20, SCREEN_WIDTH)
@@ -13,7 +13,6 @@ class Player(MovableEntity):
         super().__init__(x, y, 'personaj_joc.png', max_health=1000,
                          speed=speed, health_bar_length=300)
         self._load_additional_images()
-        self._setup_physics()
         self._setup_animation()
 
     def _load_additional_images(self):
@@ -23,16 +22,8 @@ class Player(MovableEntity):
         except Exception:
             self.image_left = self.default_image
 
-    def _setup_physics(self):
-        self.jump = False
-        self.in_air = True
-        self.velocity_y = 0
-
     def _setup_animation(self):
         self.weapon_image = None
-        self.medkit_image = None
-        self.frame = 1
-        self.last_frame_update = 0
         self.frame_duration = 100
 
     def _on_death(self):

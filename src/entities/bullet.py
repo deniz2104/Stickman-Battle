@@ -1,5 +1,5 @@
 import pygame
-from Scripts.config import SCREEN_HEIGHT, load_texture
+from src.core.config import SCREEN_HEIGHT, load_texture
 
 class Bullet(pygame.sprite.Sprite):
     def __init__(self, x, y, direction, image_path, damage=40):
