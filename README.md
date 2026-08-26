@@ -135,14 +135,14 @@ Stickman-Battle/
 
 `base_classes.py` definește lanțul de moștenire folosit de toate obiectele din joc:
 
-- `GameObject(pygame.sprite.Sprite, ABC)`: încarcă imaginea/masca de coliziune, poziționează sprite-ul; `draw()` e abstractă.
-- `HealthEntity(GameObject)`: adaugă viață, damage/heal și desenarea barei de viață (cu efect de „delay” la damage).
+- `GameObject(pygame.sprite.Sprite, ABC)`: încarcă imaginea/masca de coliziune, poziționează sprite-ul;
+- `HealthEntity(GameObject)`: adaugă viață, damage/heal și desenarea barii de viață (cu efect de „delay” la damage).
 - `MovableEntity(HealthEntity)`: adaugă viteză, direcție și flip; `update()` e abstractă și implementată de `Player`/`Enemy`.
-- `CollectibleItem(GameObject)`: bază pentru `Weapon` și `Medkit`; `use(player)` e abstractă și aplică efectul la coliziune.
+- `CollectibleItem(GameObject)`: bază pentru `Weapon` și `Medkit`; `use(player)` metodă abstractă și aplică efectul la coliziune.
 
 ### Gameplay
 
-- **`player.py`**: `Player(MovableEntity)` gestionează mișcarea orizontală (cu coliziune la `wall_left`/`wall_right`), animația idle (respirație pe scală sinusoidală) și desenarea armei în funcție de orientare.
+- **`player.py`**: `Player(MovableEntity)` gestionează mișcarea orizontală cu coliziune asupra zidului, animația idle  și desenarea armei în funcție de orientare.
 - **`enemy.py`**: `Enemy(MovableEntity)` urmărește jucătorul pe axa X și aplică damage continuu la contact.
 - **`bullet.py`**: `Bullet` se deplasează pe direcția de tragere, verifică coliziunea cu inamicul (mask collision) și cu pereții, apoi dispare.
 - **`weapon.py`** / **`medkit.py`**: la coliziune cu jucătorul, echipează arma respectiv vindecă, apoi dispar de pe hartă.
