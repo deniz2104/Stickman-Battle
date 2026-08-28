@@ -136,7 +136,7 @@ Stickman-Battle/
 `base_classes.py` definește lanțul de moștenire folosit de toate obiectele din joc:
 
 - `GameObject(pygame.sprite.Sprite, ABC)`: încarcă imaginea/masca de coliziune, poziționează sprite-ul;
-- `HealthEntity(GameObject)`: adaugă viață, damage/heal și desenarea barii de viață (cu efect de „delay" la damage).
+- `HealthEntity(GameObject)`: adaugă viață, damage/heal și desenarea barii de viață (cu efect de „delay” la damage).
 - `MovableEntity(HealthEntity)`: adaugă viteză, direcție și flip; `update()` e abstractă și implementată de `Player`/`Enemy`.
 - `CollectibleItem(GameObject)`: bază pentru `Weapon` și `Medkit`; `use(player)` metodă abstractă și aplică efectul la coliziune.
 
