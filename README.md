@@ -80,16 +80,16 @@ python -m src.main
 
 ```
                         MAIN MENU
-                     [START]  [QUIT]
+                     [START] [QUIT]
                           |
                           v
                        GAMEPLAY
-        Urzicarius  <-------------->  Senior Engineer
+        Urzicarius <--------------> Senior Engineer
                           |
                 +---------+---------+
-                v                   v
-           GAME OVER               WIN
-        [RESTART] [QUIT]     [RESTART] [QUIT]
+                v v
+           GAME OVER WIN
+        [RESTART] [QUIT] [RESTART] [QUIT]
 ```
 
 Obiective:
@@ -107,24 +107,24 @@ Proiectul e organizat pe straturi: `core` (motor de joc), `entities` (obiecte di
 ```
 Stickman-Battle/
 └── src/
-    ├── main.py                  # bucla principală (orchestrator)
+    ├── main.py # bucla principală (orchestrator)
     ├── core/
-    │   ├── config.py            # constante globale, fereastra pygame, load_texture()
-    │   ├── game_init.py         # construiește starea inițială a jocului
-    │   ├── handlers.py          # event handling pentru fiecare stare a jocului
-    │   └── spawn.py             # logica de spawn pentru armă și medkit
+    │ ├── config.py # constante globale, fereastra pygame, load_texture()
+    │ ├── game_init.py # construiește starea inițială a jocului
+    │ ├── handlers.py # event handling pentru fiecare stare a jocului
+    │ └── spawn.py # logica de spawn pentru armă și medkit
     ├── entities/
-    │   ├── base_classes.py      # ierarhia OOP de bază (GameObject, HealthEntity, MovableEntity, CollectibleItem)
-    │   ├── player.py            # Urzicarius: mișcare, animație, armă
-    │   ├── enemy.py             # Senior Engineer: urmărire și atac
-    │   ├── bullet.py            # traiectorie și coliziuni ale gloanțelor
-    │   ├── medkit.py            # item colectabil, vindecă jucătorul
-    │   ├── weapon.py            # item colectabil, echipează arma
-    │   └── wall.py              # limitele orizontale ale hărții
+    │ ├── base_classes.py # ierarhia OOP de bază (GameObject, HealthEntity, MovableEntity, CollectibleItem)
+    │ ├── player.py # Urzicarius: mișcare, animație, armă
+    │ ├── enemy.py # Senior Engineer: urmărire și atac
+    │ ├── bullet.py # traiectorie și coliziuni ale gloanțelor
+    │ ├── medkit.py # item colectabil, vindecă jucătorul
+    │ ├── weapon.py # item colectabil, echipează arma
+    │ └── wall.py # limitele orizontale ale hărții
     ├── ui/
-    │   ├── button.py            # butoane interactive (hover, click)
-    │   └── render.py            # desenarea fundalului și a HUD-ului
-    └── textures/                # toate asset-urile grafice
+    │ ├── button.py # butoane interactive (hover, click)
+    │ └── render.py # desenarea fundalului și a HUD-ului
+    └── textures/ # toate asset-urile grafice
 ```
 
 ---
@@ -136,13 +136,13 @@ Stickman-Battle/
 `base_classes.py` definește lanțul de moștenire folosit de toate obiectele din joc:
 
 - `GameObject(pygame.sprite.Sprite, ABC)`: încarcă imaginea/masca de coliziune, poziționează sprite-ul;
-- `HealthEntity(GameObject)`: adaugă viață, damage/heal și desenarea barii de viață (cu efect de „delay” la damage).
+- `HealthEntity(GameObject)`: adaugă viață, damage/heal și desenarea barii de viață (cu efect de „delay" la damage).
 - `MovableEntity(HealthEntity)`: adaugă viteză, direcție și flip; `update()` e abstractă și implementată de `Player`/`Enemy`.
 - `CollectibleItem(GameObject)`: bază pentru `Weapon` și `Medkit`; `use(player)` metodă abstractă și aplică efectul la coliziune.
 
 ### Gameplay
 
-- **`player.py`**: `Player(MovableEntity)` gestionează mișcarea orizontală cu coliziune asupra zidului, animația idle  și desenarea armei în funcție de orientare.
+- **`player.py`**: `Player(MovableEntity)` gestionează mișcarea orizontală cu coliziune asupra zidului, animația idle și desenarea armei în funcție de orientare.
 - **`enemy.py`**: `Enemy(MovableEntity)` urmărește jucătorul pe axa X și aplică damage continuu la contact.
 - **`bullet.py`**: `Bullet` se deplasează pe direcția de tragere, verifică coliziunea cu inamicul (mask collision) și cu pereții, apoi dispare.
 - **`weapon.py`** / **`medkit.py`**: la coliziune cu jucătorul, echipează arma respectiv vindecă, apoi dispar de pe hartă.
